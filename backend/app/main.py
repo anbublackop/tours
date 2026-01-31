@@ -1,10 +1,11 @@
+from app.db.base import Base
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api.v1.api import api_router
 from app.core.logging import setup_logging
-
+from app.db.session import engine
 
 def create_application() -> FastAPI:
     """
@@ -20,6 +21,8 @@ def create_application() -> FastAPI:
         redoc_url="/redoc",
         openapi_url="/openapi.json",
     )
+
+    # Base.metadata.create_all(bind=engine)
 
     # -----------------------
     # Middleware
@@ -64,3 +67,5 @@ def create_application() -> FastAPI:
 
 
 app = create_application()
+
+

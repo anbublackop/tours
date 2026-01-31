@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class TourCreate(BaseModel):
+class PackageCreate(BaseModel):
     name: str
     location: str
     price: float
