@@ -7,12 +7,17 @@ from app.models.user import User
 
 router = APIRouter()
 
-@router.get("/", response_model=list[UserRead])
-def get_users():
-    return [
-        {"name": "Alice", "email": "alice@example.com", "age": 30},
-        {"name": "Bob", "email": "bob@example.com", "age": 25}
-    ]
+@router.get(
+    "", 
+    response_model=list[UserRead], 
+    status_code=status.HTTP_200_OK
+)
+def get_users(db: Session = Depends(get_db)):
+    try:
+        users = db.query(User).all()
+        return users
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.post(
     "",
@@ -23,28 +28,20 @@ def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
 ):
-    # Check if email exists
-    # existing_user = db.query(User).filter(User.email == user.email).first()
-    # if existing_user:
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail="Email already registered",
-    #     )
-
-    db_user = User(
-        name=user.name,
-        email=user.email,
-        # hashed_password=hash_password(user.password),
-        password=user.password,
-        age=user.age
-    )
-
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-
+    try:
+        db_user = User(
+            name=user.name,
+            email=user.email,
+            password=hash_password(user.password),
+            age=user.age
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="User already exists with this email"
+        )
     return db_user
-
-# @router.get("/{id}", response_model=UserRead)
-# def get_user(id: int):
-#     return db_user  # ORM object
