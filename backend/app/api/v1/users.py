@@ -1,3 +1,4 @@
+from asyncio.log import logger
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas.user import UserCreate, UserRead
 from sqlalchemy.orm import Session
@@ -33,13 +34,15 @@ def create_user(
             name=user.name,
             email=user.email,
             password=hash_password(user.password),
-            age=user.age
+            age=user.age,
+            is_admin=user.is_admin
         )
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
     except Exception as e:
         db.rollback()
+        logger.info(f"Error creating user: {e}")
         raise HTTPException(
             status_code=409,
             detail="User already exists with this email"
