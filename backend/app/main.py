@@ -30,6 +30,7 @@ def create_application() -> FastAPI:
         allow_origins=[
             "https://yourfrontend.com",
             "http://localhost:3000",
+            "http://localhost:8080"
         ],
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE"],

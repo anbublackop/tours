@@ -7,6 +7,7 @@ class User(Base):
     name = Column(String)
     email = Column(String, unique=True, index=True)
     age = Column(Integer)
+    phone = Column(String)  # New field for phone number
     password = Column(String)  # This should store hashed passwords
     is_admin = Column(Integer, default=0)  # 0 for regular users, 1 for admins
     def __repr__(self):

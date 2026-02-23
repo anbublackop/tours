@@ -21,7 +21,7 @@ def get_users(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.post(
-    "",
+    "/register",
     response_model=UserRead,
     status_code=status.HTTP_201_CREATED,
 )
@@ -35,6 +35,7 @@ def create_user(
             email=user.email,
             password=hash_password(user.password),
             age=user.age,
+            phone=user.phone,
             is_admin=user.is_admin
         )
         db.add(db_user)

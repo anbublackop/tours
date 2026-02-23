@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 35 30% 97%;
+    --foreground: 20 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 20% 15%;
+
+    --primary: 25 85% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 175 45% 30%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 35 20% 92%;
+    --muted-foreground: 20 10% 45%;
+
+    --accent: 40 90% 50%;
+    --accent-foreground: 20 20% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
+    --ring: 25 85% 55%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 20 20% 12%;
+    --sidebar-foreground: 35 20% 92%;
+    --sidebar-primary: 25 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 20 15% 18%;
+    --sidebar-accent-foreground: 35 20% 92%;
+    --sidebar-border: 20 10% 20%;
+    --sidebar-ring: 25 85% 55%;
+
+    --hero-gradient: linear-gradient(135deg, hsl(25 85% 55% / 0.9), hsl(175 45% 30% / 0.8));
+    --card-shadow: 0 4px 20px -4px hsl(20 20% 15% / 0.08);
+    --card-shadow-hover: 0 12px 40px -8px hsl(25 85% 55% / 0.2);
+  }
+
+  .dark {
+    --background: 20 20% 8%;
+    --foreground: 35 20% 92%;
+    --card: 20 15% 12%;
+    --card-foreground: 35 20% 92%;
+    --popover: 20 15% 12%;
+    --popover-foreground: 35 20% 92%;
+    --primary: 25 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 175 45% 35%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 20 10% 18%;
+    --muted-foreground: 35 15% 60%;
+    --accent: 40 90% 50%;
+    --accent-foreground: 20 20% 10%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 20 10% 20%;
+    --input: 20 10% 20%;
+    --ring: 25 85% 55%;
+    --sidebar-background: 20 20% 6%;
+    --sidebar-foreground: 35 20% 92%;
+    --sidebar-primary: 25 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 20 10% 12%;
+    --sidebar-accent-foreground: 35 20% 92%;
+    --sidebar-border: 20 10% 15%;
+    --sidebar-ring: 25 85% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+  .font-body {
+    font-family: 'DM Sans', sans-serif;
+  }
+  .hero-overlay {
+    background: var(--hero-gradient);
+  }
+  .card-elevated {
+    box-shadow: var(--card-shadow);
+  }
+  .card-elevated:hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+}
