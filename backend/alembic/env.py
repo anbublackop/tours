@@ -20,6 +20,8 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from app.db.base import Base
 from app.models.user import User
+from app.models.booking import Booking
+from app.models.refresh_tokens import RefreshToken
 # from app.models.booking import Booking
 # from app.models.review import Review
 # from app.models.package import Package   # import ALL models

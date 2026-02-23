@@ -1,4 +1,4 @@
-import hashlib
+from asyncio.log import logger
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from app.core.config import settings
@@ -8,9 +8,8 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-import hashlib
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -45,14 +44,13 @@ def decode_token(token: str):
 #     except JWTError:
 #         raise HTTPException(status_code=401, detail="Invalid token")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
 def get_current_user(
     access_token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
     try:
         payload = jwt.decode(access_token, settings.secret_key, algorithms=[settings.algorithm])
+        logger.info(f"Decoded token payload: {payload}")
         user_id = payload.get("sub")
         if payload.get("type") != "access":
             raise HTTPException(status_code=401, detail="Invalid token type")

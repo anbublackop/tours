@@ -1,4 +1,4 @@
-from app.core.security import create_access_token, create_refresh_token, get_current_user, get_current_user, verify_password
+from app.core.security import create_access_token, create_refresh_token, get_current_user, verify_password
 from app.schemas.token import LoginRequest, TokenResponse
 from app.db.session import get_db
 from app.models.refresh_tokens import RefreshToken
@@ -6,9 +6,6 @@ from app.utils.common import get_expiry
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.models.user import User
-from fastapi.security import OAuth2PasswordBearer
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 router = APIRouter()
 
