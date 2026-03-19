@@ -22,7 +22,7 @@ def verify_password(password: str, hashed: str) -> bool:
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = get_expiry(type="minutes", value=settings.access_token_expire_minutes)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type": "access"})
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
 def create_refresh_token(data: dict):
@@ -52,6 +52,8 @@ def get_current_user(
         payload = jwt.decode(access_token, settings.secret_key, algorithms=[settings.algorithm])
         logger.info(f"Decoded token payload: {payload}")
         user_id = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
         if payload.get("type") != "access":
             raise HTTPException(status_code=401, detail="Invalid token type")
     except JWTError:

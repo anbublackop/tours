@@ -12,7 +12,7 @@ router = APIRouter()
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     
-    user = db.query(User).filter(User.email == request.email).first()
+    user = db.query(User).filter(User.email == request.username).first()
     
     if not user or not verify_password(request.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
