@@ -1,7 +1,7 @@
 export interface TourPackage {
   id: string;
   title: string;
-  country: "india" | "nepal";
+  country: "india" | "nepal" | "south-korea" | "thailand" | "china" | "sri-lanka";
   category: string;
   state?: string;
   duration: string;
@@ -365,12 +365,170 @@ export const packages: TourPackage[] = [
       { id: "a1", name: "Extra Safari", description: "Additional jeep safari", price: 4000 },
     ],
   },
+  // South Korea packages
+  {
+    id: "seoul-modern-wonders",
+    title: "Seoul Modern Wonders Tour",
+    country: "south-korea",
+    category: "heritage",
+    duration: "5 Days / 4 Nights",
+    price: 45000,
+    originalPrice: 52000,
+    rating: 4.7,
+    reviews: 156,
+    image: "https://images.unsplash.com/photo-1538485399081-7191377e8241?w=600",
+    highlights: ["Seoul", "Gyeongbokgung Palace", "Namsan Tower", "DMZ Tour"],
+    description: "Explore the vibrant capital of South Korea, blending ancient palaces with modern skyscrapers and K-pop culture.",
+    itinerary: [
+      { day: 1, title: "Arrival in Seoul", description: "Arrive at Incheon Airport. Transfer to hotel. Evening walk in Myeongdong.", meals: "Dinner", overnight: "Seoul" },
+      { day: 2, title: "Palace & History", description: "Visit Gyeongbokgung Palace, National Folk Museum, and Bukchon Hanok Village.", meals: "Breakfast, Lunch, Dinner", overnight: "Seoul" },
+      { day: 3, title: "Modern Seoul", description: "Namsan Tower, Lotte World Tower, Gangnam District, and K-pop experience.", meals: "Breakfast, Lunch, Dinner", overnight: "Seoul" },
+      { day: 4, title: "DMZ Tour", description: "Full day DMZ tour including 3rd Infiltration Tunnel and Dora Observatory.", meals: "Breakfast, Lunch, Dinner", overnight: "Seoul" },
+      { day: 5, title: "Departure", description: "Morning shopping. Transfer to airport.", meals: "Breakfast", overnight: "" },
+    ],
+    hotels: [
+      { id: "h1", name: "Ibis Styles Ambassador Seoul", category: "standard", pricePerNight: 8000, rating: 4.1, amenities: ["WiFi", "AC", "Breakfast"] },
+      { id: "h2", name: "Shinchon Ever8 Serviced Residence", category: "premium", pricePerNight: 12000, rating: 4.5, amenities: ["WiFi", "AC", "Kitchen", "Pool"] },
+      { id: "h3", name: "Signiel Seoul", category: "luxury", pricePerNight: 25000, rating: 4.9, amenities: ["WiFi", "AC", "Pool", "Spa", "Restaurant", "City View"] },
+    ],
+    transport: [
+      { id: "t1", type: "Private Car", description: "Comfortable private car with driver", price: 15000 },
+      { id: "t2", type: "KORAIL Train", description: "High-speed train tickets", price: 8000 },
+    ],
+    inclusions: ["Accommodation", "Meals as mentioned", "Transport", "Sightseeing", "Guide", "Entry tickets"],
+    exclusions: ["International flights", "Personal expenses", "Tips", "Optional activities"],
+    bookingRules: ["Full payment 21 days before", "DMZ tour requires passport"],
+    travelRules: ["Respect local customs", "Photography restrictions at DMZ"],
+    addons: [
+      { id: "a1", name: "K-Pop Concert", description: "VIP tickets to K-pop show", price: 8000 },
+    ],
+  },
+  // Thailand packages
+  {
+    id: "bangkok-pattaya-beach",
+    title: "Bangkok & Pattaya Beach Escape",
+    country: "thailand",
+    category: "beach",
+    duration: "6 Days / 5 Nights",
+    price: 28000,
+    originalPrice: 35000,
+    rating: 4.6,
+    reviews: 189,
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600",
+    highlights: ["Bangkok", "Pattaya", "Temples", "Islands", "Night Markets"],
+    description: "Experience Thailand's vibrant capital and beautiful beaches with this perfect combination of city exploration and coastal relaxation.",
+    itinerary: [
+      { day: 1, title: "Arrival in Bangkok", description: "Arrive at Bangkok airport. Transfer to hotel. Evening Chao Phraya River cruise.", meals: "Dinner", overnight: "Bangkok" },
+      { day: 2, title: "Bangkok Temples", description: "Visit Grand Palace, Wat Arun, Wat Phra Kaew, and Temple of the Emerald Buddha.", meals: "Breakfast, Lunch, Dinner", overnight: "Bangkok" },
+      { day: 3, title: "Bangkok City Tour", description: "Chatuchak Weekend Market, Jim Thompson House, and floating markets.", meals: "Breakfast, Lunch, Dinner", overnight: "Bangkok" },
+      { day: 4, title: "Bangkok to Pattaya", description: "Drive to Pattaya. Visit Nong Nooch Tropical Garden and Tiffany's Cabaret.", meals: "Breakfast, Lunch, Dinner", overnight: "Pattaya" },
+      { day: 5, title: "Pattaya Beach Day", description: "Relax at beach, optional island tour to Coral Island, evening nightlife.", meals: "Breakfast, Lunch, Dinner", overnight: "Pattaya" },
+      { day: 6, title: "Departure", description: "Morning at leisure. Transfer to airport.", meals: "Breakfast", overnight: "" },
+    ],
+    hotels: [
+      { id: "h1", name: "Mercure Bangkok Siam", category: "standard", pricePerNight: 4500, rating: 4.0, amenities: ["WiFi", "AC", "Pool", "Breakfast"] },
+      { id: "h2", name: "Amari Watergate Bangkok", category: "premium", pricePerNight: 8000, rating: 4.4, amenities: ["WiFi", "AC", "Pool", "Spa", "Restaurant"] },
+      { id: "h3", name: "Mandarin Oriental Bangkok", category: "luxury", pricePerNight: 18000, rating: 4.9, amenities: ["WiFi", "AC", "Pool", "Spa", "Restaurant", "River View"] },
+    ],
+    transport: [
+      { id: "t1", type: "Private Van", description: "AC van for transfers", price: 12000 },
+      { id: "t2", type: "Speedboat", description: "Speedboat to islands", price: 6000 },
+    ],
+    inclusions: ["Accommodation", "Meals as mentioned", "Transport", "Sightseeing", "Guide", "Entry tickets"],
+    exclusions: ["International flights", "Personal expenses", "Tips", "Optional activities"],
+    bookingRules: ["Full payment 14 days before", "Valid passport required"],
+    travelRules: ["Dress modestly at temples", "Respect local customs"],
+    addons: [
+      { id: "a1", name: "Elephant Sanctuary", description: "Ethical elephant experience", price: 5000 },
+    ],
+  },
+  // China packages
+  {
+    id: "beijing-xian-shanghai",
+    title: "Imperial China: Beijing, Xi'an & Shanghai",
+    country: "china",
+    category: "heritage",
+    duration: "8 Days / 7 Nights",
+    price: 55000,
+    originalPrice: 65000,
+    rating: 4.8,
+    reviews: 203,
+    image: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600",
+    highlights: ["Beijing", "Xi'an", "Shanghai", "Great Wall", "Terracotta Army"],
+    description: "Journey through China's imperial past and modern marvels, from ancient dynasties to futuristic skyscrapers.",
+    itinerary: [
+      { day: 1, title: "Arrival in Beijing", description: "Arrive at Beijing airport. Transfer to hotel. Evening Tiananmen Square.", meals: "Dinner", overnight: "Beijing" },
+      { day: 2, title: "Forbidden City", description: "Visit Forbidden City, Jingshan Park, and Hutongs.", meals: "Breakfast, Lunch, Dinner", overnight: "Beijing" },
+      { day: 3, title: "Great Wall & Ming Tombs", description: "Full day Great Wall hike and Ming Dynasty tombs.", meals: "Breakfast, Lunch, Dinner", overnight: "Beijing" },
+      { day: 4, title: "Beijing to Xi'an", description: "High-speed train to Xi'an. Evening Muslim Quarter.", meals: "Breakfast, Lunch, Dinner", overnight: "Xi'an" },
+      { day: 5, title: "Terracotta Army", description: "Visit Terracotta Warriors, Banpo Museum, and City Wall.", meals: "Breakfast, Lunch, Dinner", overnight: "Xi'an" },
+      { day: 6, title: "Xi'an to Shanghai", description: "Flight to Shanghai. Evening Bund waterfront.", meals: "Breakfast, Lunch, Dinner", overnight: "Shanghai" },
+      { day: 7, title: "Shanghai Exploration", description: "Yu Garden, French Concession, Shanghai Tower observation deck.", meals: "Breakfast, Lunch, Dinner", overnight: "Shanghai" },
+      { day: 8, title: "Departure", description: "Morning shopping. Transfer to airport.", meals: "Breakfast", overnight: "" },
+    ],
+    hotels: [
+      { id: "h1", name: "Hilton Beijing Wangfujing", category: "standard", pricePerNight: 9000, rating: 4.2, amenities: ["WiFi", "AC", "Pool", "Breakfast"] },
+      { id: "h2", name: "The Peninsula Beijing", category: "premium", pricePerNight: 15000, rating: 4.6, amenities: ["WiFi", "AC", "Pool", "Spa", "Restaurant"] },
+      { id: "h3", name: "Park Hyatt Shanghai", category: "luxury", pricePerNight: 22000, rating: 4.9, amenities: ["WiFi", "AC", "Pool", "Spa", "Restaurant", "City View"] },
+    ],
+    transport: [
+      { id: "t1", type: "High-Speed Train", description: "Beijing to Xi'an train", price: 8000 },
+      { id: "t2", type: "Domestic Flight", description: "Xi'an to Shanghai flight", price: 12000 },
+    ],
+    inclusions: ["Accommodation", "Meals as mentioned", "Transport", "Sightseeing", "Guide", "Entry tickets"],
+    exclusions: ["International flights", "Personal expenses", "Tips", "Optional activities"],
+    bookingRules: ["Full payment 30 days before", "Valid visa required"],
+    travelRules: ["Photography restrictions at some sites", "Respect local customs"],
+    addons: [
+      { id: "a1", name: "Peking Duck Dinner", description: "Authentic Peking duck experience", price: 3000 },
+    ],
+  },
+  // Sri Lanka packages
+  {
+    id: "sri-lanka-cultural-triangle",
+    title: "Sri Lanka Cultural Triangle & Beaches",
+    country: "sri-lanka",
+    category: "heritage",
+    duration: "7 Days / 6 Nights",
+    price: 32000,
+    originalPrice: 38000,
+    rating: 4.7,
+    reviews: 167,
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600",
+    highlights: ["Colombo", "Sigiriya", "Kandy", "Galle", "Tea Plantations"],
+    description: "Discover Sri Lanka's ancient kingdoms, colonial heritage, and pristine beaches in this comprehensive cultural journey.",
+    itinerary: [
+      { day: 1, title: "Arrival in Colombo", description: "Arrive at Colombo airport. Transfer to hotel. Evening city tour.", meals: "Dinner", overnight: "Colombo" },
+      { day: 2, title: "Colombo to Sigiriya", description: "Drive to Sigiriya. Visit Dambulla Cave Temple en route.", meals: "Breakfast, Lunch, Dinner", overnight: "Sigiriya" },
+      { day: 3, title: "Sigiriya & Polonnaruwa", description: "Climb Sigiriya Rock Fortress, explore Polonnaruwa ancient city.", meals: "Breakfast, Lunch, Dinner", overnight: "Sigiriya" },
+      { day: 4, title: "Sigiriya to Kandy", description: "Drive to Kandy via Matale. Visit Spice Gardens and Temple of the Tooth.", meals: "Breakfast, Lunch, Dinner", overnight: "Kandy" },
+      { day: 5, title: "Kandy to Galle", description: "Drive to Galle. Visit Dutch Fort and beaches.", meals: "Breakfast, Lunch, Dinner", overnight: "Galle" },
+      { day: 6, title: "Galle Exploration", description: "Explore Galle Fort, optional whale watching, beach relaxation.", meals: "Breakfast, Lunch, Dinner", overnight: "Galle" },
+      { day: 7, title: "Departure", description: "Drive back to Colombo. Transfer to airport.", meals: "Breakfast", overnight: "" },
+    ],
+    hotels: [
+      { id: "h1", name: "Cinnamon Citadel Kandy", category: "standard", pricePerNight: 5500, rating: 4.1, amenities: ["WiFi", "AC", "Pool", "Breakfast"] },
+      { id: "h2", name: "Jetwing Lighthouse", category: "premium", pricePerNight: 9500, rating: 4.5, amenities: ["WiFi", "AC", "Pool", "Spa", "Restaurant"] },
+      { id: "h3", name: "Amangalla", category: "luxury", pricePerNight: 16000, rating: 4.9, amenities: ["WiFi", "AC", "Pool", "Spa", "Restaurant", "Colonial Heritage"] },
+    ],
+    transport: [
+      { id: "t1", type: "Private Car", description: "AC car with driver", price: 14000 },
+      { id: "t2", type: "Tuk-tuk", description: "Local tuk-tuk for short distances", price: 2000 },
+    ],
+    inclusions: ["Accommodation", "Meals as mentioned", "Transport", "Sightseeing", "Guide", "Entry tickets"],
+    exclusions: ["International flights", "Personal expenses", "Tips", "Optional activities"],
+    bookingRules: ["Full payment 21 days before", "Valid visa required"],
+    travelRules: ["Dress modestly at temples", "Respect local customs"],
+    addons: [
+      { id: "a1", name: "Whale Watching", description: "Boat tour for whale and dolphin watching", price: 6000 },
+    ],
+  },
 ];
 
-export const getPackagesByCountry = (country: "india" | "nepal") =>
+export const getPackagesByCountry = (country: "india" | "nepal" | "south-korea" | "thailand" | "china" | "sri-lanka") =>
   packages.filter((p) => p.country === country);
 
-export const getPackagesByCategory = (country: "india" | "nepal", category: string) =>
+export const getPackagesByCategory = (country: "india" | "nepal" | "south-korea" | "thailand" | "china" | "sri-lanka", category: string) =>
   packages.filter((p) => p.country === country && p.category === category);
 
 export const getPackageById = (id: string) =>

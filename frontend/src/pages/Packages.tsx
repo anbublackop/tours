@@ -7,18 +7,32 @@ import EnquiryModal from "@/components/EnquiryModal";
 import { getPackagesByCountry, packageCategories } from "@/data/packages";
 import indiaImg from "@/assets/india-destination.jpg";
 import nepalImg from "@/assets/nepal-destination.jpg";
+// Placeholder banner images for new countries
+const southKoreaImg = "https://images.unsplash.com/photo-1538485399081-7191377e8241?w=1200";
+const thailandImg = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200";
+const chinaImg = "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1200";
+const sriLankaImg = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200";
 
 const Packages = () => {
   const { country } = useParams<{ country: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get("category") || "";
 
-  const validCountry = country === "india" || country === "nepal" ? country : "india";
+  const validCountry = country === "india" || country === "nepal" || country === "south-korea" || country === "thailand" || country === "china" || country === "sri-lanka" ? country : "india";
   const allPackages = getPackagesByCountry(validCountry);
   const filtered = activeCategory ? allPackages.filter((p) => p.category === activeCategory) : allPackages;
 
-  const countryName = validCountry === "india" ? "India" : "Nepal";
-  const bannerImg = validCountry === "india" ? indiaImg : nepalImg;
+  const countryData = {
+    "india": { name: "India", img: indiaImg },
+    "nepal": { name: "Nepal", img: nepalImg },
+    "south-korea": { name: "South Korea", img: southKoreaImg },
+    "thailand": { name: "Thailand", img: thailandImg },
+    "china": { name: "China", img: chinaImg },
+    "sri-lanka": { name: "Sri Lanka", img: sriLankaImg },
+  };
+
+  const countryName = countryData[validCountry as keyof typeof countryData].name;
+  const bannerImg = countryData[validCountry as keyof typeof countryData].img;
 
   return (
     <div className="min-h-screen flex flex-col">

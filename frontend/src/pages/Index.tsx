@@ -33,7 +33,7 @@ const Index = () => {
               Discover the Magic of India & Nepal
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/90 mb-8 font-sans">
-              Handcrafted tour packages for unforgettable journeys. From royal palaces to Himalayan peaks, we make your travel dreams come true.
+              Handcrafted tour packages for unforgettable journeys across Asia. From royal palaces to Himalayan peaks, modern cities to ancient temples, we make your travel dreams come true.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/packages/india">
@@ -42,8 +42,28 @@ const Index = () => {
                 </Button>
               </Link>
               <Link to="/packages/nepal">
-                <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-sans font-semibold">
-                  Explore Nepal
+                <Button size="lg" className="bg-green-600 text-white hover:bg-green-700 font-sans font-semibold gap-2">
+                  Explore Nepal <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link to="/packages/south-korea">
+                <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700 font-sans font-semibold gap-2">
+                  Explore South Korea <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link to="/packages/thailand">
+                <Button size="lg" className="bg-yellow-600 text-white hover:bg-yellow-700 font-sans font-semibold gap-2">
+                  Explore Thailand <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link to="/packages/china">
+                <Button size="lg" className="bg-red-600 text-white hover:bg-red-700 font-sans font-semibold gap-2">
+                  Explore China <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link to="/packages/sri-lanka">
+                <Button size="lg" className="bg-purple-600 text-white hover:bg-purple-700 font-sans font-semibold gap-2">
+                  Explore Sri Lanka <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
             </div>
@@ -74,13 +94,17 @@ const Index = () => {
         <div className="container">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">Choose Your Destination</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">From the vibrant culture of India to the serene Himalayas of Nepal, your next adventure awaits.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">Explore the rich cultures and breathtaking landscapes of Asia's most captivating destinations.</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               { name: "India", slug: "india", img: indiaImg, desc: "Royal palaces, sacred temples, wildlife safaris & coastal paradises" },
               { name: "Nepal", slug: "nepal", img: nepalImg, desc: "Himalayan treks, ancient temples, jungle safaris & adventure sports" },
+              { name: "South Korea", slug: "south-korea", img: "https://images.unsplash.com/photo-1538485399081-7191377e8241?w=600", desc: "Modern cities, ancient palaces, K-pop culture & DMZ tours" },
+              { name: "Thailand", slug: "thailand", img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600", desc: "Tropical beaches, golden temples, street food & island hopping" },
+              { name: "China", slug: "china", img: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600", desc: "Great Wall, Terracotta Army, modern cities & ancient dynasties" },
+              { name: "Sri Lanka", slug: "sri-lanka", img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600", desc: "Tea plantations, ancient kingdoms, beaches & wildlife" },
             ].map((dest) => (
               <Link to={`/packages/${dest.slug}`} key={dest.slug} className="group">
                 <motion.div
