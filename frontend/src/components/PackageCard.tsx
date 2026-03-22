@@ -1,47 +1,74 @@
 import { Link } from "react-router-dom";
-import { Star, Clock, MapPin } from "lucide-react";
+import { Star, Clock, MapPin, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { TourPackage } from "@/data/packages";
 
 const PackageCard = ({ pkg }: { pkg: TourPackage }) => {
   return (
     <Link to={`/package/${pkg.id}`} className="group block">
-      <div className="bg-card rounded-lg overflow-hidden card-elevated transition-all duration-300 hover:-translate-y-1">
-        <div className="relative h-52 overflow-hidden">
+      <div className="bg-white dark:bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-border/50 hover:border-primary/20">
+        <div className="relative h-56 overflow-hidden">
           <img
             src={pkg.image}
             alt={pkg.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-primary text-primary-foreground">{pkg.category}</Badge>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          <div className="absolute top-4 left-4">
+            <Badge className="bg-white/90 text-foreground backdrop-blur-sm border-0 font-body font-medium shadow-lg">
+              {pkg.category}
+            </Badge>
           </div>
+          
           {pkg.originalPrice && (
-            <div className="absolute top-3 right-3">
-              <Badge variant="destructive">{Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)}% OFF</Badge>
+            <div className="absolute top-4 right-4">
+              <Badge className="bg-red-500 text-white border-0 font-body font-semibold shadow-lg">
+                {Math.round(((pkg.originalPrice - pkg.price) / pkg.originalPrice) * 100)}% OFF
+              </Badge>
             </div>
           )}
+          
+          {/* Rating overlay */}
+          <div className="absolute bottom-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="text-sm font-semibold text-foreground font-body">{pkg.rating}</span>
+          </div>
         </div>
-        <div className="p-4">
-          <h3 className="font-display text-lg font-semibold text-card-foreground mb-1 group-hover:text-primary transition-colors">{pkg.title}</h3>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{pkg.duration}</span>
-            {pkg.state && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{pkg.state}</span>}
-          </div>
-          <div className="flex items-center gap-1 mb-3">
-            <Star className="w-4 h-4 fill-accent text-accent" />
-            <span className="text-sm font-medium">{pkg.rating}</span>
-            <span className="text-xs text-muted-foreground">({pkg.reviews} reviews)</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-xl font-bold text-primary">₹{pkg.price.toLocaleString()}</span>
-              {pkg.originalPrice && (
-                <span className="text-sm text-muted-foreground line-through ml-2">₹{pkg.originalPrice.toLocaleString()}</span>
-              )}
-              <span className="text-xs text-muted-foreground block">per person</span>
+        
+        <div className="p-6">
+          <h3 className="font-display text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+            {pkg.title}
+          </h3>
+          
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4 font-body">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-primary" />
+              <span>{pkg.duration}</span>
             </div>
-            <span className="text-sm font-medium text-primary group-hover:underline">View Details →</span>
+            {pkg.state && (
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-primary" />
+                <span>{pkg.state}</span>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-primary font-display">₹{pkg.price.toLocaleString()}</span>
+                {pkg.originalPrice && (
+                  <span className="text-sm text-muted-foreground line-through font-body">₹{pkg.originalPrice.toLocaleString()}</span>
+                )}
+              </div>
+              <span className="text-xs text-muted-foreground font-body">per person</span>
+            </div>
+            
+            <div className="flex items-center text-primary font-semibold text-sm group-hover:text-accent transition-colors duration-300 font-body">
+              View Details
+              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
+            </div>
           </div>
         </div>
       </div>

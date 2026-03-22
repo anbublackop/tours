@@ -15,45 +15,81 @@ const Navbar = () => {
   const isLoggedIn = location.pathname.startsWith("/dashboard");
 
   return (
-    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
+    <header className="sticky top-0 z-50 bg-white/95 dark:bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-sm">
       {/* Top bar */}
-      <div className="bg-secondary text-secondary-foreground text-sm py-1.5">
-        <div className="container flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> +91 98765 43210</span>
-            <span className="hidden sm:flex items-center gap-1"><MapPin className="w-3 h-3" /> New Delhi, India</span>
+      <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-b border-border/20">
+        <div className="container flex justify-between items-center py-2">
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-primary" />
+              <span className="font-body">+91 98765 43210</span>
+            </div>
+            <div className="hidden sm:flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-primary" />
+              <span className="font-body">New Delhi, India</span>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="hover:opacity-80">WhatsApp</a>
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="hover:opacity-80">Facebook</a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:opacity-80">Instagram</a>
+          <div className="flex items-center gap-4">
+            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-body text-sm">
+              WhatsApp
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-body text-sm">
+              Facebook
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-body text-sm">
+              Instagram
+            </a>
           </div>
         </div>
       </div>
 
       {/* Main nav */}
-      <nav className="container flex items-center justify-between py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl">🏔️</span>
-          <span className="font-display text-xl font-bold text-foreground">YatraSathi</span>
+      <nav className="container flex items-center justify-between py-4">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+            <span className="text-2xl">🏔️</span>
+          </div>
+          <span className="font-display text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+            YatraSathi
+          </span>
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-6">
-          <Link to="/" className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors">Home</Link>
+        <div className="hidden lg:flex items-center gap-8">
+          <Link to="/" className="font-body text-sm font-medium text-foreground hover:text-primary transition-colors duration-200 relative group">
+            Home
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
+          </Link>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors flex items-center gap-1">
-              Destinations <ChevronDown className="w-3 h-3" />
+            <DropdownMenuTrigger className="font-body text-sm font-medium text-foreground hover:text-primary transition-colors duration-200 flex items-center gap-2 group">
+              Destinations 
+              <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem asChild><Link to="/packages/india">India Tours</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link to="/packages/nepal">Nepal Tours</Link></DropdownMenuItem>
+            <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border-border/50 shadow-xl">
+              <DropdownMenuItem asChild>
+                <Link to="/packages/india" className="font-body hover:bg-primary/10 cursor-pointer">🇮🇳 India Tours</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/packages/nepal" className="font-body hover:bg-primary/10 cursor-pointer">🇳🇵 Nepal Tours</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/packages/south-korea" className="font-body hover:bg-primary/10 cursor-pointer">🇰🇷 South Korea Tours</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/packages/thailand" className="font-body hover:bg-primary/10 cursor-pointer">🇹🇭 Thailand Tours</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/packages/china" className="font-body hover:bg-primary/10 cursor-pointer">🇨🇳 China Tours</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/packages/sri-lanka" className="font-body hover:bg-primary/10 cursor-pointer">🇱🇰 Sri Lanka Tours</Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link to="/packages/india" className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors">India</Link>
-          <Link to="/packages/nepal" className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors">Nepal</Link>
+          {/* <Link to="/packages/india" className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors">India</Link>
+          <Link to="/packages/nepal" className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors">Nepal</Link> */}
           <Link to="/enquiry" className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors">Enquiry</Link>
           <Link to="/about" className="font-sans text-sm font-medium text-foreground hover:text-primary transition-colors">About Us</Link>
         </div>
@@ -79,16 +115,51 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="lg:hidden bg-card border-t border-border pb-4">
-          <div className="container flex flex-col gap-3 pt-3">
-            <Link to="/" className="py-2 font-sans text-sm font-medium" onClick={() => setMobileOpen(false)}>Home</Link>
-            <Link to="/packages/india" className="py-2 font-sans text-sm font-medium" onClick={() => setMobileOpen(false)}>India Tours</Link>
-            <Link to="/packages/nepal" className="py-2 font-sans text-sm font-medium" onClick={() => setMobileOpen(false)}>Nepal Tours</Link>
-            <Link to="/enquiry" className="py-2 font-sans text-sm font-medium" onClick={() => setMobileOpen(false)}>Enquiry</Link>
-            <Link to="/about" className="py-2 font-sans text-sm font-medium" onClick={() => setMobileOpen(false)}>About Us</Link>
-            <div className="flex gap-2 pt-2">
-              <Link to="/login" onClick={() => setMobileOpen(false)}><Button variant="outline" size="sm">Login</Button></Link>
-              <Link to="/register" onClick={() => setMobileOpen(false)}><Button size="sm">Register</Button></Link>
+        <div className="lg:hidden bg-white/95 dark:bg-card/95 backdrop-blur-xl border-t border-border/50 shadow-lg">
+          <div className="container flex flex-col gap-1 pt-4 pb-6">
+            <Link to="/" className="py-3 px-4 font-body text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200" onClick={() => setMobileOpen(false)}>
+              Home
+            </Link>
+            <div className="py-2 px-4">
+              <div className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Destinations</div>
+              <div className="flex flex-col gap-1">
+                <Link to="/packages/india" className="py-2 px-3 font-body text-sm text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all duration-200" onClick={() => setMobileOpen(false)}>
+                  🇮🇳 India Tours
+                </Link>
+                <Link to="/packages/nepal" className="py-2 px-3 font-body text-sm text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all duration-200" onClick={() => setMobileOpen(false)}>
+                  🇳🇵 Nepal Tours
+                </Link>
+                <Link to="/packages/south-korea" className="py-2 px-3 font-body text-sm text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all duration-200" onClick={() => setMobileOpen(false)}>
+                  🇰🇷 South Korea Tours
+                </Link>
+                <Link to="/packages/thailand" className="py-2 px-3 font-body text-sm text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all duration-200" onClick={() => setMobileOpen(false)}>
+                  🇹🇭 Thailand Tours
+                </Link>
+                <Link to="/packages/china" className="py-2 px-3 font-body text-sm text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all duration-200" onClick={() => setMobileOpen(false)}>
+                  🇨🇳 China Tours
+                </Link>
+                <Link to="/packages/sri-lanka" className="py-2 px-3 font-body text-sm text-foreground hover:text-primary hover:bg-primary/5 rounded-md transition-all duration-200" onClick={() => setMobileOpen(false)}>
+                  🇱🇰 Sri Lanka Tours
+                </Link>
+              </div>
+            </div>
+            <Link to="/enquiry" className="py-3 px-4 font-body text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200" onClick={() => setMobileOpen(false)}>
+              Enquiry
+            </Link>
+            <Link to="/about" className="py-3 px-4 font-body text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200" onClick={() => setMobileOpen(false)}>
+              About Us
+            </Link>
+            <div className="flex gap-3 pt-4 px-4 border-t border-border/50 mt-2">
+              <Link to="/login" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full flex-1">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register" onClick={() => setMobileOpen(false)}>
+                <Button size="sm" className="bg-primary hover:bg-primary/90 font-body font-medium rounded-full flex-1">
+                  Register
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
