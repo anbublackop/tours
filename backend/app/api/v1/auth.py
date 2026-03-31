@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from jose import JWTError
 
@@ -9,7 +10,7 @@ from app.core.security import (
     verify_password,
     get_current_user,
 )
-from app.schemas.token import LoginRequest, RefreshRequest, TokenResponse
+from app.schemas.token import RefreshRequest, TokenResponse
 from app.db.session import get_db
 from app.models.refresh_tokens import RefreshToken
 from app.models.user import User
@@ -19,9 +20,17 @@ router = APIRouter()
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(request: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.username).first()
-    if not user or not verify_password(request.password, user.password):
+def login(
+    form: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+):
+    """
+    Standard OAuth2 password flow.
+    Send `username` (email) and `password` as form fields.
+    Works with the Swagger UI Authorize button directly.
+    """
+    user = db.query(User).filter(User.email == form.username).first()
+    if not user or not verify_password(form.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     access_token = create_access_token({"sub": str(user.id)})

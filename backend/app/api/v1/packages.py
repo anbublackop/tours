@@ -1,25 +1,38 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
+from typing import Optional
 
-from app.core.security import get_current_user, require_admin
+from app.core.security import require_admin
 from app.db.session import get_db
 from app.models.package import Package
 from app.models.user import User
-from app.schemas.package import PackageCreate, PackageRead, PackageUpdate
+from app.schemas.package import PackageCreate, PackageListRead, PackageRead, PackageUpdate
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[PackageRead])
-def list_packages(db: Session = Depends(get_db)):
-    """Public — anyone can browse packages."""
-    return db.query(Package).all()
+@router.get("", response_model=list[PackageListRead])
+def list_packages(
+    country: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    limit: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """Public — browse packages with optional filters."""
+    q = db.query(Package)
+    if country:
+        q = q.filter(Package.country == country)
+    if category:
+        q = q.filter(Package.category == category)
+    if limit:
+        q = q.limit(limit)
+    return q.all()
 
 
 @router.get("/{package_id}", response_model=PackageRead)
 def get_package(package_id: int, db: Session = Depends(get_db)):
-    """Public — anyone can view a single package."""
+    """Public — full package detail."""
     pkg = db.query(Package).filter(Package.id == package_id).first()
     if not pkg:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Package not found")
@@ -34,7 +47,7 @@ def create_package(
 ):
     """Admin only — create a new tour package."""
     now = str(datetime.utcnow())
-    pkg = Package(**payload.model_dump(), created_at=now, updated_at=now)
+    pkg = Package(**payload.model_dump(), name=payload.title, created_at=now, updated_at=now)
     db.add(pkg)
     db.commit()
     db.refresh(pkg)
@@ -48,12 +61,14 @@ def update_package(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin only — update a tour package."""
+    """Admin only — update a package."""
     pkg = db.query(Package).filter(Package.id == package_id).first()
     if not pkg:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Package not found")
     for field, value in payload.model_dump(exclude_none=True).items():
         setattr(pkg, field, value)
+    if payload.title:
+        pkg.name = payload.title
     pkg.updated_at = str(datetime.utcnow())
     db.commit()
     db.refresh(pkg)
@@ -66,7 +81,7 @@ def delete_package(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin only — delete a tour package."""
+    """Admin only — delete a package."""
     pkg = db.query(Package).filter(Package.id == package_id).first()
     if not pkg:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Package not found")

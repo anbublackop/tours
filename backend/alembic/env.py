@@ -22,9 +22,9 @@ from app.db.base import Base
 from app.models.user import User
 from app.models.booking import Booking
 from app.models.refresh_tokens import RefreshToken
-# from app.models.booking import Booking
-# from app.models.review import Review
-# from app.models.package import Package   # import ALL models
+from app.models.review import Review
+from app.models.package import Package
+from app.models.enquiry import Enquiry
 
 target_metadata = Base.metadata
 
