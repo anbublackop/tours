@@ -1,4 +1,5 @@
-import { useSearchParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, CreditCard, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,39 +8,81 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { getPackageById } from "@/data/packages";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
+import type { ApiPackage, ApiBooking } from "@/types/api";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
-  const packageId = searchParams.get("package") || "";
-  const members = Number(searchParams.get("members")) || 1;
-  const date = searchParams.get("date") || "";
-  const hotelId = searchParams.get("hotel") || "";
-  const transportId = searchParams.get("transport") || "";
-  const addonIds = (searchParams.get("addons") || "").split(",").filter(Boolean);
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const pkg = getPackageById(packageId);
+  const packageId  = searchParams.get("package") || "";
+  const members    = Number(searchParams.get("members")) || 1;
+  const date       = searchParams.get("date") || "";
+  const hotelId    = searchParams.get("hotel") || "";
+  const transportId = searchParams.get("transport") || "";
+  const addonIds   = (searchParams.get("addons") || "").split(",").filter(Boolean);
+
+  const [pkg, setPkg] = useState<ApiPackage | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [paying, setPaying] = useState(false);
+
+  useEffect(() => {
+    if (!user) { navigate("/login"); return; }
+    if (!packageId) { setLoading(false); return; }
+    api.get<ApiPackage>(`/packages/${packageId}`)
+      .then(setPkg)
+      .catch(() => setPkg(null))
+      .finally(() => setLoading(false));
+  }, [packageId, user, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col"><Navbar />
+        <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground">Loading…</p></div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!pkg) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
+      <div className="min-h-screen flex flex-col"><Navbar />
         <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground">Invalid booking.</p></div>
         <Footer />
       </div>
     );
   }
 
-  const hotel = pkg.hotels.find((h) => h.id === hotelId) || pkg.hotels[0];
-  const transport = pkg.transport.find((t) => t.id === transportId) || pkg.transport[0];
-  const selectedAddons = pkg.addons.filter((a) => addonIds.includes(a.id));
-  const hotelTotal = hotel.pricePerNight * (pkg.itinerary.length - 1);
-  const addonTotal = selectedAddons.reduce((s, a) => s + a.price, 0);
-  const totalPerPerson = pkg.price + hotelTotal + transport.price + addonTotal;
+  const hotel     = (pkg.hotels ?? []).find((h) => h.id === hotelId) ?? pkg.hotels?.[0];
+  const transport = (pkg.transport ?? []).find((t) => t.id === transportId) ?? pkg.transport?.[0];
+  const selectedAddons = (pkg.addons ?? []).filter((a) => addonIds.includes(a.id));
+  const nights    = Math.max((pkg.itinerary?.length ?? 1) - 1, (pkg.duration_days ?? 1) - 1);
+  const hotelTotal  = (hotel?.pricePerNight ?? 0) * nights;
+  const addonTotal  = selectedAddons.reduce((s, a) => s + a.price, 0);
+  const totalPerPerson = pkg.price + hotelTotal + (transport?.price ?? 0) + addonTotal;
   const grandTotal = totalPerPerson * members;
 
-  const handlePay = () => {
-    toast.success("Payment gateway will be integrated with Razorpay/Stripe. Booking confirmed!");
+  const handlePay = async () => {
+    setPaying(true);
+    try {
+      await api.post<ApiBooking>("/bookings", {
+        package_id: pkg.id,
+        travel_date: date,
+        num_people: members,
+        payment_method: "credit_card",
+        hotel_id: hotelId || undefined,
+        transport_id: transportId || undefined,
+        selected_addons: addonIds.length > 0 ? addonIds : undefined,
+      }, true);
+      toast.success("Booking confirmed! Redirecting to your dashboard…");
+      navigate("/dashboard");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Payment failed. Please try again.");
+    } finally {
+      setPaying(false);
+    }
   };
 
   return (
@@ -61,8 +104,8 @@ const Checkout = () => {
                 <div className="flex justify-between"><span className="text-muted-foreground">Travel Date</span><span className="font-medium">{date}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Members</span><span className="font-medium">{members}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Duration</span><span className="font-medium">{pkg.duration}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Hotel</span><span className="font-medium">{hotel.name}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Transport</span><span className="font-medium">{transport.type}</span></div>
+                {hotel && <div className="flex justify-between"><span className="text-muted-foreground">Hotel</span><span className="font-medium">{hotel.name}</span></div>}
+                {transport && <div className="flex justify-between"><span className="text-muted-foreground">Transport</span><span className="font-medium">{transport.type}</span></div>}
                 {selectedAddons.length > 0 && (
                   <div className="flex justify-between"><span className="text-muted-foreground">Add-ons</span><span className="font-medium">{selectedAddons.map((a) => a.name).join(", ")}</span></div>
                 )}
@@ -73,8 +116,8 @@ const Checkout = () => {
               <CardHeader><CardTitle className="font-display">Price Breakdown</CardTitle></CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between"><span>Base Package × {members}</span><span>₹{(pkg.price * members).toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>Accommodation × {pkg.itinerary.length - 1} nights × {members}</span><span>₹{(hotelTotal * members).toLocaleString()}</span></div>
-                <div className="flex justify-between"><span>Transport × {members}</span><span>₹{(transport.price * members).toLocaleString()}</span></div>
+                {hotel && <div className="flex justify-between"><span>Accommodation × {nights} nights × {members}</span><span>₹{(hotelTotal * members).toLocaleString()}</span></div>}
+                {transport && <div className="flex justify-between"><span>Transport × {members}</span><span>₹{(transport.price * members).toLocaleString()}</span></div>}
                 {selectedAddons.map((a) => (
                   <div key={a.id} className="flex justify-between"><span>{a.name} × {members}</span><span>₹{(a.price * members).toLocaleString()}</span></div>
                 ))}
@@ -89,8 +132,9 @@ const Checkout = () => {
                   <Shield className="w-5 h-5 text-secondary" />
                   <span>Your payment is secure and encrypted</span>
                 </div>
-                <Button size="lg" className="w-full font-semibold gap-2" onClick={handlePay}>
-                  <CreditCard className="w-5 h-5" /> Pay ₹{grandTotal.toLocaleString()}
+                <Button size="lg" className="w-full font-semibold gap-2" onClick={handlePay} disabled={paying || !date}>
+                  <CreditCard className="w-5 h-5" />
+                  {paying ? "Processing…" : `Pay ₹${grandTotal.toLocaleString()}`}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground mt-3">By clicking Pay, you agree to our booking terms and cancellation policy.</p>
               </CardContent>

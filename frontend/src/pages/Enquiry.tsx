@@ -9,14 +9,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { api } from "@/lib/api";
 
 const Enquiry = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Thank you! We'll get back to you within 24 hours.");
-    setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+    setSubmitting(true);
+    try {
+      await api.post("/enquiries", form);
+      toast.success("Your enquiry has been submitted successfully! We'll get back to you within 24 hours.");
+      setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to send enquiry. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -43,7 +53,7 @@ const Enquiry = () => {
                       <div><Label>Subject</Label><Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} required /></div>
                     </div>
                     <div><Label>Message</Label><Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={5} placeholder="Tell us about your travel plans, special requirements, or questions..." required /></div>
-                    <Button type="submit" size="lg" className="w-full font-semibold">Send Enquiry</Button>
+                    <Button type="submit" size="lg" className="w-full font-semibold" disabled={submitting}>{submitting ? "Sending…" : "Send Enquiry"}</Button>
                   </form>
                 </CardContent>
               </Card>

@@ -1,38 +1,50 @@
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PackageCard from "@/components/PackageCard";
 import EnquiryModal from "@/components/EnquiryModal";
-import { getPackagesByCountry, packageCategories } from "@/data/packages";
+import { packageCategories } from "@/data/packages";
+import { api } from "@/lib/api";
+import type { ApiPackage } from "@/types/api";
 import indiaImg from "@/assets/india-destination.jpg";
 import nepalImg from "@/assets/nepal-destination.jpg";
-// Placeholder banner images for new countries
+
 const southKoreaImg = "https://images.unsplash.com/photo-1538485399081-7191377e8241?w=1200";
-const thailandImg = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200";
-const chinaImg = "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1200";
-const sriLankaImg = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200";
+const thailandImg   = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200";
+const chinaImg      = "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1200";
+const sriLankaImg   = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200";
+
+const countryData: Record<string, { name: string; img: string }> = {
+  "india":       { name: "India",       img: indiaImg },
+  "nepal":       { name: "Nepal",       img: nepalImg },
+  "south-korea": { name: "South Korea", img: southKoreaImg },
+  "thailand":    { name: "Thailand",    img: thailandImg },
+  "china":       { name: "China",       img: chinaImg },
+  "sri-lanka":   { name: "Sri Lanka",   img: sriLankaImg },
+};
 
 const Packages = () => {
   const { country } = useParams<{ country: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get("category") || "";
 
-  const validCountry = country === "india" || country === "nepal" || country === "south-korea" || country === "thailand" || country === "china" || country === "sri-lanka" ? country : "india";
-  const allPackages = getPackagesByCountry(validCountry);
-  const filtered = activeCategory ? allPackages.filter((p) => p.category === activeCategory) : allPackages;
+  const validCountry = countryData[country ?? ""] ? country! : "india";
+  const { name: countryName, img: bannerImg } = countryData[validCountry];
 
-  const countryData = {
-    "india": { name: "India", img: indiaImg },
-    "nepal": { name: "Nepal", img: nepalImg },
-    "south-korea": { name: "South Korea", img: southKoreaImg },
-    "thailand": { name: "Thailand", img: thailandImg },
-    "china": { name: "China", img: chinaImg },
-    "sri-lanka": { name: "Sri Lanka", img: sriLankaImg },
-  };
+  const [packages, setPackages] = useState<ApiPackage[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const countryName = countryData[validCountry as keyof typeof countryData].name;
-  const bannerImg = countryData[validCountry as keyof typeof countryData].img;
+  useEffect(() => {
+    setLoading(true);
+    const params = new URLSearchParams({ country: validCountry });
+    if (activeCategory) params.set("category", activeCategory);
+    api.get<ApiPackage[]>(`/packages?${params}`)
+      .then(setPackages)
+      .catch(() => setPackages([]))
+      .finally(() => setLoading(false));
+  }, [validCountry, activeCategory]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -74,11 +86,11 @@ const Packages = () => {
       {/* Packages Grid */}
       <section className="py-12 bg-background flex-1">
         <div className="container">
-          {filtered.length > 0 ? (
+          {loading ? (
+            <p className="text-center text-muted-foreground py-16">Loading packages…</p>
+          ) : packages.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((pkg) => (
-                <PackageCard key={pkg.id} pkg={pkg} />
-              ))}
+              {packages.map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />)}
             </div>
           ) : (
             <div className="text-center py-16">

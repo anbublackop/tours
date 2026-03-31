@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
+import { api } from "@/lib/api";
 
 interface EnquiryModalProps {
   trigger?: React.ReactNode;
@@ -15,12 +16,21 @@ interface EnquiryModalProps {
 const EnquiryModal = ({ trigger, packageName }: EnquiryModalProps) => {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Enquiry submitted! We'll get back to you within 24 hours.");
-    setOpen(false);
-    setForm({ name: "", email: "", phone: "", message: "" });
+    setSubmitting(true);
+    try {
+      await api.post("/enquiries", { ...form, package_name: packageName });
+      toast.success("Enquiry submitted! We'll get back to you within 24 hours.");
+      setOpen(false);
+      setForm({ name: "", email: "", phone: "", message: "" });
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to submit enquiry. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -55,7 +65,7 @@ const EnquiryModal = ({ trigger, packageName }: EnquiryModalProps) => {
             <Label htmlFor="eq-message">Message</Label>
             <Textarea id="eq-message" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Tell us about your travel plans..." rows={4} required />
           </div>
-          <Button type="submit" className="w-full">Submit Enquiry</Button>
+          <Button type="submit" className="w-full" disabled={submitting}>{submitting ? "Submitting…" : "Submit Enquiry"}</Button>
         </form>
       </DialogContent>
     </Dialog>
