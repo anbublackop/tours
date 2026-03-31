@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Phone, MapPin, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,11 +8,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation();
-  const isLoggedIn = location.pathname.startsWith("/dashboard");
+  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-sm">
@@ -96,9 +102,12 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           {isLoggedIn ? (
-            <Link to="/dashboard">
-              <Button variant="default" size="sm">Dashboard</Button>
-            </Link>
+            <>
+              <Link to={isAdmin ? "/admin" : "/dashboard"}>
+                <Button variant="outline" size="sm">Dashboard</Button>
+              </Link>
+              <Button size="sm" onClick={handleLogout}>Logout</Button>
+            </>
           ) : (
             <>
               <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
@@ -150,16 +159,31 @@ const Navbar = () => {
               About Us
             </Link>
             <div className="flex gap-3 pt-4 px-4 border-t border-border/50 mt-2">
-              <Link to="/login" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full flex-1">
-                  Login
-                </Button>
-              </Link>
-              <Link to="/register" onClick={() => setMobileOpen(false)}>
-                <Button size="sm" className="bg-primary hover:bg-primary/90 font-body font-medium rounded-full flex-1">
-                  Register
-                </Button>
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link to={isAdmin ? "/admin" : "/dashboard"} onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full flex-1">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button size="sm" className="bg-primary hover:bg-primary/90 font-body font-medium rounded-full flex-1" onClick={() => { setMobileOpen(false); handleLogout(); }}>
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full flex-1">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setMobileOpen(false)}>
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 font-body font-medium rounded-full flex-1">
+                      Register
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
