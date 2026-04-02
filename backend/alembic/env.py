@@ -25,6 +25,7 @@ from app.models.refresh_tokens import RefreshToken
 from app.models.review import Review
 from app.models.package import Package
 from app.models.enquiry import Enquiry
+from app.models.destination import Destination
 
 target_metadata = Base.metadata
 
