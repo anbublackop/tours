@@ -8,9 +8,17 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🏔️</span>
-              <span className="font-display text-xl font-bold">YatraSathi</span>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-md shrink-0">
+                <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5">
+                  <path d="M4 26 L11 13 L16 21 L21.5 10 L28 26Z" fill="white" fillOpacity="0.95"/>
+                  <circle cx="25" cy="8" r="3" fill="white" fillOpacity="0.85"/>
+                </svg>
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="font-display text-lg font-bold">YatraSathi</span>
+                <span className="text-[10px] opacity-60 font-body tracking-widest uppercase">Travel & Tours</span>
+              </div>
             </div>
             <p className="text-sm opacity-70 mb-4">
               Your trusted travel companion for unforgettable journeys across India and Nepal. Crafting memories since 2015.

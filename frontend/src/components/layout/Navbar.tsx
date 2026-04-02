@@ -52,12 +52,18 @@ const Navbar = () => {
       {/* Main nav */}
       <nav className="container flex items-center justify-between py-4">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-            <span className="text-2xl">🏔️</span>
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+            <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6">
+              <path d="M4 26 L11 13 L16 21 L21.5 10 L28 26Z" fill="white" fillOpacity="0.95"/>
+              <circle cx="25" cy="8" r="3" fill="white" fillOpacity="0.85"/>
+            </svg>
           </div>
-          <span className="font-display text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-            YatraSathi
-          </span>
+          <div className="flex flex-col leading-none">
+            <span className="font-display text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 tracking-tight">
+              YatraSathi
+            </span>
+            <span className="text-[10px] text-muted-foreground font-body tracking-widest uppercase">Travel & Tours</span>
+          </div>
         </Link>
 
         {/* Desktop nav */}
