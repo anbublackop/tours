@@ -1,72 +1,37 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, Star, Users, Shield, Mountain, Waves, Landmark, Camera, Sparkles, Tent } from "lucide-react";
+import { Search, ArrowRight, Star, Users, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PackageCard from "@/components/PackageCard";
 import EnquiryModal from "@/components/EnquiryModal";
 import { api } from "@/lib/api";
-import type { ApiPackage } from "@/types/api";
+import { getCategoryUi } from "@/lib/categoryConfig";
+import type { ApiCategory, ApiDestination, ApiPackage } from "@/types/api";
 import heroBanner from "@/assets/hero-banner.jpg";
 
-const CATEGORIES = [
-  {
-    id: "Wildlife Safari",
-    name: "Wildlife Safari",
-    description: "Safaris, tigers & jungle trails",
-    gradient: "from-amber-500 via-orange-500 to-red-500",
-    shadow: "hover:shadow-orange-200/60 dark:hover:shadow-orange-900/40",
-    icon: Camera,
-  },
-  {
-    id: "Religious & Spiritual",
-    name: "Religious & Spiritual",
-    description: "Temples, pilgrimages & inner peace",
-    gradient: "from-violet-500 via-purple-500 to-indigo-600",
-    shadow: "hover:shadow-purple-200/60 dark:hover:shadow-purple-900/40",
-    icon: Sparkles,
-  },
-  {
-    id: "Adventure",
-    name: "Adventure",
-    description: "Treks, rafting & extreme thrills",
-    gradient: "from-emerald-500 via-teal-500 to-cyan-600",
-    shadow: "hover:shadow-emerald-200/60 dark:hover:shadow-emerald-900/40",
-    icon: Tent,
-  },
-  {
-    id: "Heritage & Culture",
-    name: "Heritage & Culture",
-    description: "Forts, palaces & ancient history",
-    gradient: "from-rose-500 via-pink-500 to-red-600",
-    shadow: "hover:shadow-rose-200/60 dark:hover:shadow-rose-900/40",
-    icon: Landmark,
-  },
-  {
-    id: "Beach & Coastal",
-    name: "Beach & Coastal",
-    description: "Islands, beaches & water sports",
-    gradient: "from-cyan-500 via-sky-500 to-blue-600",
-    shadow: "hover:shadow-cyan-200/60 dark:hover:shadow-cyan-900/40",
-    icon: Waves,
-  },
-  {
-    id: "Hill Stations",
-    name: "Hill Stations",
-    description: "Mountains, valleys & cool escapes",
-    gradient: "from-green-500 via-emerald-500 to-teal-600",
-    shadow: "hover:shadow-green-200/60 dark:hover:shadow-green-900/40",
-    icon: Mountain,
-  },
-];
+// Fallback gradient colours keyed by slug — used when the API doesn't provide one
+const DEST_COLORS: Record<string, string> = {
+  "india":       "from-orange-500 to-red-500",
+  "nepal":       "from-green-500 to-teal-500",
+  "south-korea": "from-blue-500 to-indigo-500",
+  "thailand":    "from-yellow-500 to-orange-500",
+  "china":       "from-red-500 to-pink-500",
+  "sri-lanka":   "from-purple-500 to-pink-500",
+};
+const DEFAULT_COLOR = "from-primary to-accent";
 
 const Index = () => {
-  const [featured, setFeatured] = useState<ApiPackage[]>([]);
+  const [featured, setFeatured]       = useState<ApiPackage[]>([]);
+  const [destinations, setDestinations] = useState<ApiDestination[]>([]);
+  const [categories, setCategories]   = useState<ApiCategory[]>([]);
 
   useEffect(() => {
     api.get<ApiPackage[]>("/packages?limit=4").then(setFeatured).catch(() => {});
+    api.get<ApiDestination[]>("/destinations").then(setDestinations).catch(() => {});
+    api.get<ApiCategory[]>("/categories").then(setCategories).catch(() => {});
   }, []);
 
   return (
@@ -131,30 +96,27 @@ const Index = () => {
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body">Explore the rich cultures and breathtaking landscapes of Asia's most captivating destinations.</p>
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {[
-              { name: "India",       slug: "india",       img: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=85", desc: "Royal palaces, sacred temples, wildlife safaris & coastal paradises", color: "from-orange-500 to-red-500" },
-              { name: "Nepal",       slug: "nepal",       img: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=85", desc: "Himalayan treks, ancient temples, jungle safaris & adventure sports", color: "from-green-500 to-teal-500" },
-              { name: "South Korea", slug: "south-korea", img: "https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&q=85", desc: "Modern cities, ancient palaces, K-pop culture & DMZ tours", color: "from-blue-500 to-indigo-500" },
-              { name: "Thailand",    slug: "thailand",    img: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=85", desc: "Tropical beaches, golden temples, street food & island hopping", color: "from-yellow-500 to-orange-500" },
-              { name: "China",       slug: "china",       img: "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=800&q=85", desc: "Great Wall, Terracotta Army, modern cities & ancient dynasties", color: "from-red-500 to-pink-500" },
-              { name: "Sri Lanka",   slug: "sri-lanka",   img: "https://images.unsplash.com/photo-1581888227599-779811939961?w=800&q=85", desc: "Tea plantations, ancient kingdoms, pristine beaches & wildlife", color: "from-purple-500 to-pink-500" },
-            ].map((dest, index) => (
-              <Link to={`/packages/${dest.slug}`} key={dest.slug} className="group">
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}
-                  className="relative h-96 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 bg-white dark:bg-card border border-border/50">
-                  <img src={dest.img} alt={dest.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                  <div className={`absolute top-4 right-4 w-12 h-12 bg-gradient-to-br ${dest.color} rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg`}>{dest.name.charAt(0)}</div>
-                  <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <h3 className="font-display text-3xl font-bold text-white mb-2 group-hover:text-accent transition-colors duration-300">{dest.name}</h3>
-                    <p className="text-white/90 text-sm mb-4 font-body leading-relaxed">{dest.desc}</p>
-                    <div className="flex items-center text-accent font-semibold text-sm group-hover:text-white transition-colors duration-300">
-                      Explore Packages <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+            {destinations.map((dest, index) => {
+              const color = DEST_COLORS[dest.slug] ?? DEFAULT_COLOR;
+              const img = dest.image_url ?? `https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=85`;
+              return (
+                <Link to={`/packages/${dest.slug}`} key={dest.slug} className="group">
+                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}
+                    className="relative h-96 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 bg-white dark:bg-card border border-border/50">
+                    <img src={img} alt={dest.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                    <div className={`absolute top-4 right-4 w-12 h-12 bg-gradient-to-br ${color} rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg`}>{dest.name.charAt(0)}</div>
+                    <div className="absolute bottom-0 left-0 right-0 p-8">
+                      <h3 className="font-display text-3xl font-bold text-white mb-2 group-hover:text-accent transition-colors duration-300">{dest.name}</h3>
+                      {dest.description && <p className="text-white/90 text-sm mb-4 font-body leading-relaxed">{dest.description}</p>}
+                      <div className="flex items-center text-accent font-semibold text-sm group-hover:text-white transition-colors duration-300">
+                        Explore Packages <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
+                  </motion.div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -169,46 +131,50 @@ const Index = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {CATEGORIES.map((cat, index) => (
-              <motion.div
-                key={cat.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-              >
-                <Link to={`/packages/india?category=${encodeURIComponent(cat.id)}`} className="group block">
-                  <div className={`relative h-52 rounded-2xl overflow-hidden bg-gradient-to-br ${cat.gradient} shadow-lg hover:shadow-2xl ${cat.shadow} transition-all duration-500 hover:-translate-y-2`}>
+            {categories.map((cat, index) => {
+              const ui = getCategoryUi(cat.slug);
+              const Icon = ui.icon;
+              return (
+                <motion.div
+                  key={cat.slug}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.08 }}
+                >
+                  <Link to={`/packages/india?category=${cat.slug}`} className="group block">
+                    <div className={`relative h-52 rounded-2xl overflow-hidden bg-gradient-to-br ${ui.gradient} shadow-lg hover:shadow-2xl ${ui.shadow} transition-all duration-500 hover:-translate-y-2`}>
 
-                    {/* Decorative circles */}
-                    <div className="absolute -top-8 -right-8 w-44 h-44 bg-white/10 rounded-full pointer-events-none" />
-                    <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-black/10 rounded-full pointer-events-none" />
-                    <div className="absolute top-1/2 right-6 w-16 h-16 bg-white/5 rounded-full pointer-events-none" />
+                      {/* Decorative circles */}
+                      <div className="absolute -top-8 -right-8 w-44 h-44 bg-white/10 rounded-full pointer-events-none" />
+                      <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-black/10 rounded-full pointer-events-none" />
+                      <div className="absolute top-1/2 right-6 w-16 h-16 bg-white/5 rounded-full pointer-events-none" />
 
-                    {/* Content */}
-                    <div className="absolute inset-0 flex flex-col justify-between p-7">
-                      {/* Icon box */}
-                      <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
-                        <cat.icon className="w-7 h-7 text-white" strokeWidth={1.5} />
-                      </div>
+                      {/* Content */}
+                      <div className="absolute inset-0 flex flex-col justify-between p-7">
+                        {/* Icon box */}
+                        <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
+                          <Icon className="w-7 h-7 text-white" strokeWidth={1.5} />
+                        </div>
 
-                      {/* Text + arrow */}
-                      <div>
-                        <p className="text-white/70 text-sm font-body mb-1 group-hover:text-white/90 transition-colors duration-300">
-                          {cat.description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-display text-xl font-bold text-white leading-tight">{cat.name}</h3>
-                          <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/40 group-hover:translate-x-1 transition-all duration-300">
-                            <ArrowRight className="w-4 h-4 text-white" />
+                        {/* Text + arrow */}
+                        <div>
+                          <p className="text-white/70 text-sm font-body mb-1 group-hover:text-white/90 transition-colors duration-300">
+                            {cat.description ?? ui.description}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-display text-xl font-bold text-white leading-tight">{cat.name}</h3>
+                            <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/40 group-hover:translate-x-1 transition-all duration-300">
+                              <ArrowRight className="w-4 h-4 text-white" />
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

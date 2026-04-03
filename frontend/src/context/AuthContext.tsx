@@ -46,15 +46,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<AuthState>(loadAuth);
 
   const login = useCallback(async (email: string, password: string) => {
+    const body = new URLSearchParams({ username: email, password });
     const response = await fetch("http://localhost:8000/api/v1/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: email, password }),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
     });
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.detail ?? "Invalid credentials");
+      const detail = err.detail;
+      const message =
+        typeof detail === "string" ? detail
+        : Array.isArray(detail) ? detail.map((d: { msg?: string }) => d.msg).join(", ")
+        : "Invalid credentials";
+      throw new Error(message);
     }
 
     const data = await response.json();

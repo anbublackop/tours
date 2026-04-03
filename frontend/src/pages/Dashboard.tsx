@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Users, Package, LogOut, XCircle } from "lucide-react";
+import { Calendar, Users, Package, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,7 @@ const statusColor = (s: string) => {
 };
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<ApiBooking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,8 +41,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleLogout = () => { logout(); navigate("/"); };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -53,7 +51,6 @@ const Dashboard = () => {
               <h1 className="font-display text-3xl font-bold text-foreground">My Dashboard</h1>
               <p className="text-muted-foreground">Welcome back, {user?.name ?? "Traveller"}</p>
             </div>
-            <Button variant="outline" className="gap-2" onClick={handleLogout}><LogOut className="w-4 h-4" /> Logout</Button>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4 mb-8">

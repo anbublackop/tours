@@ -1,60 +1,54 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutGrid, Camera, Sparkles, Tent, Landmark, Waves, Mountain } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PackageCard from "@/components/PackageCard";
 import EnquiryModal from "@/components/EnquiryModal";
 import { api } from "@/lib/api";
-import type { ApiPackage } from "@/types/api";
+import { getCategoryUi } from "@/lib/categoryConfig";
+import type { ApiCategory, ApiDestination, ApiPackage } from "@/types/api";
 
-const indiaImg = "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=85";
-const nepalImg = "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200&q=85";
-
-const CATEGORIES = [
-  { id: "Wildlife Safari",       name: "Wildlife Safari",       icon: Camera,   color: "text-orange-500",  activeBg: "bg-gradient-to-r from-amber-500 to-orange-500"   },
-  { id: "Religious & Spiritual", name: "Religious & Spiritual", icon: Sparkles, color: "text-purple-500",  activeBg: "bg-gradient-to-r from-violet-500 to-purple-600"  },
-  { id: "Adventure",             name: "Adventure",             icon: Tent,     color: "text-emerald-500", activeBg: "bg-gradient-to-r from-emerald-500 to-teal-600"   },
-  { id: "Heritage & Culture",    name: "Heritage & Culture",    icon: Landmark, color: "text-rose-500",    activeBg: "bg-gradient-to-r from-rose-500 to-pink-600"      },
-  { id: "Beach & Coastal",       name: "Beach & Coastal",       icon: Waves,    color: "text-cyan-500",    activeBg: "bg-gradient-to-r from-cyan-500 to-blue-600"      },
-  { id: "Hill Stations",         name: "Hill Stations",         icon: Mountain, color: "text-green-500",   activeBg: "bg-gradient-to-r from-green-500 to-emerald-600"  },
-];
-
-const southKoreaImg = "https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=1200&q=85";
-const thailandImg   = "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&q=85";
-const chinaImg      = "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=1200&q=85";
-const sriLankaImg   = "https://images.unsplash.com/photo-1581888227599-779811939961?w=1200&q=85";
-
-const countryData: Record<string, { name: string; img: string }> = {
-  "india":       { name: "India",       img: indiaImg },
-  "nepal":       { name: "Nepal",       img: nepalImg },
-  "south-korea": { name: "South Korea", img: southKoreaImg },
-  "thailand":    { name: "Thailand",    img: thailandImg },
-  "china":       { name: "China",       img: chinaImg },
-  "sri-lanka":   { name: "Sri Lanka",   img: sriLankaImg },
+const FALLBACK_BANNERS: Record<string, string> = {
+  "india":       "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=85",
+  "nepal":       "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200&q=85",
+  "south-korea": "https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=1200&q=85",
+  "thailand":    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&q=85",
+  "china":       "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=1200&q=85",
+  "sri-lanka":   "https://images.unsplash.com/photo-1581888227599-779811939961?w=1200&q=85",
 };
 
 const Packages = () => {
   const { country } = useParams<{ country: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeCategory = searchParams.get("category") || "";
+  // URL param "category" stores the category slug (e.g. "wildlife-safari")
+  const activeSlug = searchParams.get("category") || "";
 
-  const validCountry = countryData[country ?? ""] ? country! : "india";
-  const { name: countryName, img: bannerImg } = countryData[validCountry];
+  const slug = country ?? "india";
 
-  const [packages, setPackages] = useState<ApiPackage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [packages, setPackages]       = useState<ApiPackage[]>([]);
+  const [destination, setDestination] = useState<ApiDestination | null>(null);
+  const [categories, setCategories]   = useState<ApiCategory[]>([]);
+  const [loading, setLoading]         = useState(true);
+
+  useEffect(() => {
+    api.get<ApiDestination>(`/destinations/${slug}`).then(setDestination).catch(() => setDestination(null));
+    api.get<ApiCategory[]>("/categories").then(setCategories).catch(() => setCategories([]));
+  }, [slug]);
 
   useEffect(() => {
     setLoading(true);
-    const params = new URLSearchParams({ country: validCountry });
-    if (activeCategory) params.set("category", activeCategory);
+    const params = new URLSearchParams({ destination_slug: slug });
+    if (activeSlug) params.set("category_slug", activeSlug);
     api.get<ApiPackage[]>(`/packages?${params}`)
       .then(setPackages)
       .catch(() => setPackages([]))
       .finally(() => setLoading(false));
-  }, [validCountry, activeCategory]);
+  }, [slug, activeSlug]);
+
+  const countryName = destination?.name ?? slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  const bannerImg   = destination?.banner_url ?? destination?.image_url ?? FALLBACK_BANNERS[slug] ?? FALLBACK_BANNERS["india"];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -81,7 +75,7 @@ const Packages = () => {
             <button
               onClick={() => setSearchParams({})}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${
-                !activeCategory
+                !activeSlug
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 scale-[1.03]"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/60"
               }`}
@@ -90,19 +84,21 @@ const Packages = () => {
               All Packages
             </button>
 
-            {CATEGORIES.map((cat) => {
-              const isActive = activeCategory === cat.id;
+            {categories.map((cat) => {
+              const ui      = getCategoryUi(cat.slug);
+              const isActive = activeSlug === cat.slug;
+              const Icon    = ui.icon;
               return (
                 <button
-                  key={cat.id}
-                  onClick={() => setSearchParams({ category: cat.id })}
+                  key={cat.slug}
+                  onClick={() => setSearchParams({ category: cat.slug })}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${
                     isActive
-                      ? `${cat.activeBg} text-white shadow-md scale-[1.03]`
+                      ? `${ui.activeBg} text-white shadow-md scale-[1.03]`
                       : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/60"
                   }`}
                 >
-                  <cat.icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : cat.color}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : ui.color}`} />
                   {cat.name}
                 </button>
               );

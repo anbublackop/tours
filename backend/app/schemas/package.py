@@ -6,6 +6,8 @@ class PackageCreate(BaseModel):
     title: str
     country: str
     category: str
+    destination_id: Optional[int] = None
+    category_id: Optional[int] = None
     state: Optional[str] = None
     description: Optional[str] = None
     price: int
@@ -33,6 +35,8 @@ class PackageUpdate(BaseModel):
     title: Optional[str] = None
     country: Optional[str] = None
     category: Optional[str] = None
+    destination_id: Optional[int] = None
+    category_id: Optional[int] = None
     state: Optional[str] = None
     description: Optional[str] = None
     price: Optional[int] = None
@@ -59,9 +63,11 @@ class PackageUpdate(BaseModel):
 class PackageListRead(BaseModel):
     """Lightweight schema for listing pages (index, packages grid)."""
     id: int
+    destination_id: Optional[int] = None
+    category_id: Optional[int] = None
     title: str
     country: str
-    category: str
+    category: Optional[str] = None
     state: Optional[str] = None
     duration: str
     duration_days: Optional[int] = None
@@ -73,8 +79,7 @@ class PackageListRead(BaseModel):
     reviews_count: Optional[int] = None
     highlights: Optional[list] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class PackageRead(PackageListRead):

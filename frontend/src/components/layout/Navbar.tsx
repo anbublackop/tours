@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Phone, MapPin, ChevronDown } from "lucide-react";
+import { Menu, X, Phone, MapPin, ChevronDown, User, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const { isLoggedIn, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -107,13 +108,37 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
-          {isLoggedIn ? (
-            <>
-              <Link to={isAdmin ? "/admin" : "/dashboard"}>
-                <Button variant="outline" size="sm">Dashboard</Button>
-              </Link>
-              <Button size="sm" onClick={handleLogout}>Logout</Button>
-            </>
+          {isLoggedIn && user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-full border border-border/60 bg-muted/40 hover:bg-muted/80 transition-all duration-200 group focus:outline-none">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col items-start leading-tight">
+                    <span className="text-[10px] text-muted-foreground font-body">Welcome back</span>
+                    <span className="text-sm font-semibold text-foreground font-body">{user.name.split(" ")[0]}</span>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors ml-0.5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-white/95 dark:bg-card/95 backdrop-blur-xl border-border/50 shadow-xl">
+                <div className="px-3 py-2.5">
+                  <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center gap-2 font-body cursor-pointer">
+                    <LayoutDashboard className="w-4 h-4" /> Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 font-body text-destructive focus:text-destructive cursor-pointer">
+                  <LogOut className="w-4 h-4" /> Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Link to="/login"><Button variant="outline" size="sm">Login</Button></Link>
@@ -164,31 +189,42 @@ const Navbar = () => {
             <Link to="/about" className="py-3 px-4 font-body text-sm font-medium text-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200" onClick={() => setMobileOpen(false)}>
               About Us
             </Link>
-            <div className="flex gap-3 pt-4 px-4 border-t border-border/50 mt-2">
-              {isLoggedIn ? (
+            <div className="pt-4 px-4 border-t border-border/50 mt-2">
+              {isLoggedIn && user ? (
                 <>
-                  <Link to={isAdmin ? "/admin" : "/dashboard"} onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full flex-1">
-                      Dashboard
+                  <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-muted/50">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col leading-tight min-w-0">
+                      <span className="text-xs text-muted-foreground font-body">Namaste 🙏</span>
+                      <span className="text-sm font-semibold text-foreground font-body truncate">{user.name}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Link to={isAdmin ? "/admin" : "/dashboard"} onClick={() => setMobileOpen(false)} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full">
+                        <LayoutDashboard className="w-3.5 h-3.5 mr-1.5" /> Dashboard
+                      </Button>
+                    </Link>
+                    <Button size="sm" variant="ghost" className="flex-1 font-body font-medium rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { setMobileOpen(false); handleLogout(); }}>
+                      <LogOut className="w-3.5 h-3.5 mr-1.5" /> Sign Out
                     </Button>
-                  </Link>
-                  <Button size="sm" className="bg-primary hover:bg-primary/90 font-body font-medium rounded-full flex-1" onClick={() => { setMobileOpen(false); handleLogout(); }}>
-                    Logout
-                  </Button>
+                  </div>
                 </>
               ) : (
-                <>
-                  <Link to="/login" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full flex-1">
+                <div className="flex gap-3">
+                  <Link to="/login" onClick={() => setMobileOpen(false)} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full border-primary/20 text-primary hover:bg-primary/10 font-body font-medium rounded-full">
                       Login
                     </Button>
                   </Link>
-                  <Link to="/register" onClick={() => setMobileOpen(false)}>
-                    <Button size="sm" className="bg-primary hover:bg-primary/90 font-body font-medium rounded-full flex-1">
+                  <Link to="/register" onClick={() => setMobileOpen(false)} className="flex-1">
+                    <Button size="sm" className="w-full bg-primary hover:bg-primary/90 font-body font-medium rounded-full">
                       Register
                     </Button>
                   </Link>
-                </>
+                </div>
               )}
             </div>
           </div>

@@ -5,7 +5,9 @@ from typing import Optional
 
 from app.core.security import require_admin
 from app.db.session import get_db
+from app.models.destination import Destination
 from app.models.package import Package
+from app.models.package_category import PackageCategory
 from app.models.user import User
 from app.schemas.package import PackageCreate, PackageListRead, PackageRead, PackageUpdate
 
@@ -15,16 +17,45 @@ router = APIRouter()
 @router.get("", response_model=list[PackageListRead])
 def list_packages(
     country: Optional[str] = Query(None),
+    destination_slug: Optional[str] = Query(None),
+    destination_id: Optional[int] = Query(None),
     category: Optional[str] = Query(None),
+    category_slug: Optional[str] = Query(None),
+    category_id: Optional[int] = Query(None),
     limit: Optional[int] = Query(None),
     db: Session = Depends(get_db),
 ):
-    """Public — browse packages with optional filters."""
+    """Public — browse packages with optional filters.
+
+    Priority for location filter:  destination_id > destination_slug > country.
+    Priority for category filter:  category_id > category_slug > category.
+    """
     q = db.query(Package)
-    if country:
+
+    # ── Destination filter ────────────────────────────────────────────────────
+    if destination_id:
+        q = q.filter(Package.destination_id == destination_id)
+    elif destination_slug:
+        dest = db.query(Destination).filter(Destination.slug == destination_slug).first()
+        if dest:
+            q = q.filter(Package.destination_id == dest.id)
+        else:
+            q = q.filter(Package.country == destination_slug)
+    elif country:
         q = q.filter(Package.country == country)
-    if category:
+
+    # ── Category filter ───────────────────────────────────────────────────────
+    if category_id:
+        q = q.filter(Package.category_id == category_id)
+    elif category_slug:
+        cat = db.query(PackageCategory).filter(PackageCategory.slug == category_slug).first()
+        if cat:
+            q = q.filter(Package.category_id == cat.id)
+        else:
+            q = q.filter(Package.category == category_slug)
+    elif category:
         q = q.filter(Package.category == category)
+
     if limit:
         q = q.limit(limit)
     return q.all()

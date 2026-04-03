@@ -122,19 +122,43 @@ const PackageDetail = () => {
                   <CardContent className="space-y-3">
                     {itinerary.map((day) => (
                       <div key={day.day} className="border border-border rounded-lg overflow-hidden">
-                        <button className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors" onClick={() => setExpandedDay(expandedDay === day.day ? null : day.day)}>
+                        <button
+                          className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
+                          onClick={() => setExpandedDay(expandedDay === day.day ? null : day.day)}
+                        >
                           <div className="flex items-center gap-3">
-                            <span className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">{day.day}</span>
+                            <span className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shrink-0">{day.day}</span>
                             <span className="font-semibold text-foreground">{day.title}</span>
                           </div>
-                          {expandedDay === day.day ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          {expandedDay === day.day ? <ChevronUp className="w-4 h-4 shrink-0" /> : <ChevronDown className="w-4 h-4 shrink-0" />}
                         </button>
                         {expandedDay === day.day && (
-                          <div className="px-4 pb-4 border-t border-border pt-3">
-                            <p className="text-muted-foreground text-sm mb-2">{day.description}</p>
-                            <div className="flex gap-4 text-xs text-muted-foreground">
-                              <span>🍽️ {day.meals}</span>
-                              {day.overnight && <span>🏨 Overnight: {day.overnight}</span>}
+                          <div className="border-t border-border">
+                            {day.image_url && (
+                              <div className="relative h-52 w-full overflow-hidden">
+                                <img
+                                  src={day.image_url}
+                                  alt={day.title}
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                <span className="absolute bottom-3 left-4 text-white text-xs font-medium bg-black/40 backdrop-blur-sm px-2 py-1 rounded-full">
+                                  Day {day.day}
+                                </span>
+                              </div>
+                            )}
+                            <div className="px-4 pb-4 pt-3 space-y-3">
+                              <p className="text-muted-foreground text-sm leading-relaxed">{day.description}</p>
+                              <div className="flex flex-wrap gap-3 text-xs">
+                                <span className="flex items-center gap-1.5 bg-muted/60 rounded-full px-3 py-1.5 text-muted-foreground">
+                                  🍽️ <span>{day.meals}</span>
+                                </span>
+                                {day.overnight && (
+                                  <span className="flex items-center gap-1.5 bg-muted/60 rounded-full px-3 py-1.5 text-muted-foreground">
+                                    🏨 <span>Overnight: {day.overnight}</span>
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -186,17 +210,13 @@ const PackageDetail = () => {
 
                   <TabsContent value="addons" className="mt-4 space-y-3">
                     {addons.map((a) => (
-                      <div key={a.id} onClick={() => toggleAddon(a.id)}
-                        className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddons.includes(a.id) ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                        <div className="flex justify-between items-start">
-                          <div className="flex items-start gap-3">
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 ${selectedAddons.includes(a.id) ? "bg-primary border-primary" : "border-border"}`}>
-                              {selectedAddons.includes(a.id) && <Check className="w-3 h-3 text-primary-foreground" />}
-                            </div>
-                            <div><h4 className="font-semibold text-foreground">{a.name}</h4><p className="text-sm text-muted-foreground">{a.description}</p></div>
-                          </div>
-                          <span className="text-lg font-bold text-primary">₹{a.price.toLocaleString()}</span>
+                      <div key={a.id} className="flex items-start gap-3 border border-border rounded-lg p-4">
+                        <span className="mt-1 w-2 h-2 rounded-full bg-primary shrink-0" />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground">{a.name}</h4>
+                          <p className="text-sm text-muted-foreground">{a.description}</p>
                         </div>
+                        <span className="text-base font-bold text-primary shrink-0">₹{a.price.toLocaleString()}</span>
                       </div>
                     ))}
                   </TabsContent>
@@ -206,16 +226,44 @@ const PackageDetail = () => {
               {/* Inclusions / Exclusions */}
               {((pkg.inclusions?.length ?? 0) > 0 || (pkg.exclusions?.length ?? 0) > 0) && (
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader><CardTitle className="font-display text-base">Inclusions</CardTitle></CardHeader>
-                    <CardContent className="space-y-1.5">
-                      {(pkg.inclusions ?? []).map((i) => <div key={i} className="flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-secondary" />{i}</div>)}
+                  <Card className="border-green-100 dark:border-green-900/40">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="font-display text-base flex items-center gap-2">
+                        {/* <span className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                        </span> */}
+                        Inclusions
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {(pkg.inclusions ?? []).map((item) => (
+                        <div key={item} className="flex items-start gap-2.5 text-sm">
+                          <span className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center shrink-0 mt-0.5">
+                            <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+                          </span>
+                          <span className="text-foreground">{item}</span>
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader><CardTitle className="font-display text-base">Exclusions</CardTitle></CardHeader>
-                    <CardContent className="space-y-1.5">
-                      {(pkg.exclusions ?? []).map((i) => <div key={i} className="flex items-center gap-2 text-sm"><X className="w-4 h-4 text-destructive" />{i}</div>)}
+                  <Card className="border-red-100 dark:border-red-900/40">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="font-display text-base flex items-center gap-2">
+                        {/* <span className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center shrink-0">
+                          <X className="w-3 h-3 text-white" strokeWidth={3} />
+                        </span> */}
+                        Exclusions
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {(pkg.exclusions ?? []).map((item) => (
+                        <div key={item} className="flex items-start gap-2.5 text-sm">
+                          <span className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center shrink-0 mt-0.5">
+                            <X className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+                          </span>
+                          <span className="text-muted-foreground">{item}</span>
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
                 </div>

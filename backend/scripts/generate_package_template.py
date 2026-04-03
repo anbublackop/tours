@@ -10,6 +10,8 @@ Output: package_template.xlsx (in the backend/ directory)
 Sheet layout
 ────────────
   1. Packages       — core flat fields (one row per package)
+                      destination_slug references Destinations.slug
+                      category_slug    references Categories.slug
   2. Itinerary      — day-wise plan with optional photo URL
   3. Hotels         — accommodation options per package
   4. Transport      — transport options per package
@@ -17,6 +19,7 @@ Sheet layout
   6. Lists          — inclusions / exclusions / booking_rules / travel_rules
                       (one item per row — much easier than pipe-separated cells)
   7. Destinations   — country/destination records (slug, name, image, banner)
+  8. Categories     — package category records (slug, name, description, icon)
 """
 
 import openpyxl
@@ -100,9 +103,9 @@ def build_packages_sheet(wb):
     ws.sheet_properties.tabColor = TAB_BLUE
 
     headers = [
-        ("title *",         "Full package name — must be UNIQUE and must match exactly in all other sheets"),
-        ("country *",       "india | nepal | south-korea | thailand | china | sri-lanka"),
-        ("category *",      "Wildlife Safari | Religious & Spiritual | Adventure | Heritage & Culture | Beach & Coastal | Hill Stations"),
+        ("title *",             "Full package name — must be UNIQUE and must match exactly in all other sheets"),
+        ("destination_slug *",  "References Destinations sheet → slug column, e.g. 'india' or 'south-korea'"),
+        ("category_slug *",     "References Categories sheet → slug column, e.g. 'wildlife-safari' or 'heritage-culture'"),
         ("state",           "State / region, e.g. 'Rajasthan'  (optional)"),
         ("location",        "Main city/area, e.g. 'Jaipur, Jodhpur, Jaisalmer'"),
         ("description *",   "1-3 sentence overview shown on the package detail page"),
@@ -128,7 +131,7 @@ def build_packages_sheet(wb):
     example = [
         "Rajasthan Royal Heritage Tour",
         "india",
-        "Heritage & Culture",
+        "heritage-culture",
         "Rajasthan",
         "Jaipur, Jodhpur, Jaisalmer",
         "An unforgettable journey through the royal palaces and golden deserts of Rajasthan.",
@@ -145,7 +148,8 @@ def build_packages_sheet(wb):
     _auto_width(ws)
     _legend(ws, 16,
         "* = required   |   Row 3 is an example — replace or delete it   |   "
-        "Inclusions / Exclusions / Rules → use the 'Lists' sheet"
+        "destination_slug → Destinations sheet   |   category_slug → Categories sheet   |   "
+        "Inclusions / Exclusions / Rules → Lists sheet"
     )
 
 
@@ -464,6 +468,49 @@ def build_destinations_sheet(wb):
     )
 
 
+# ── Sheet 8 — Categories ─────────────────────────────────────────────────────
+
+def build_categories_sheet(wb):
+    """
+    Each row creates or updates a package_category record.
+    The slug is referenced by destination_slug in the Packages sheet.
+    """
+    ws = wb.create_sheet("Categories")
+    ws.sheet_properties.tabColor = TAB_BROWN
+
+    headers = [
+        ("slug *",       "URL-safe identifier referenced from Packages sheet, e.g. 'wildlife-safari' — must be unique"),
+        ("name *",       "Display name shown on the site, e.g. 'Wildlife Safari'"),
+        ("description",  "Short description of the category (optional)"),
+        ("icon",         "Emoji icon displayed with the category, e.g. '🦁' (optional)"),
+    ]
+    notes = [h[1] for h in headers]
+    examples = [
+        ["wildlife-safari",     "Wildlife Safari",       "Explore the wild with guided safari experiences.",               "🦁"],
+        ["religious-spiritual", "Religious & Spiritual", "Sacred journeys to temples, shrines, and spiritual sites.",     "🙏"],
+        ["adventure",           "Adventure",             "Thrilling outdoor activities for the bold traveller.",           "🏔️"],
+        ["heritage-culture",    "Heritage & Culture",    "Discover ancient history, art, and local traditions.",          "🏛️"],
+        ["beach-coastal",       "Beach & Coastal",       "Sun, sand, and sea along stunning coastlines.",                 "🏖️"],
+        ["hill-stations",       "Hill Stations",         "Escape to cool mountain retreats and scenic hills.",            "⛰️"],
+    ]
+
+    for col, (h, _) in enumerate(headers, 1):
+        ws.cell(row=1, column=col, value=h)
+    _header(ws, 1, len(headers))
+    _note_row(ws, 2, notes)
+    ws.row_dimensions[2].height = 45
+
+    for r, row_data in enumerate(examples, 3):
+        _example_row(ws, r, row_data, len(headers))
+
+    _blank_rows(ws, len(examples) + 3, len(examples) + 15, len(headers))
+    ws.freeze_panes = "A3"
+    _auto_width(ws)
+    _legend(ws, len(examples) + 17,
+        "* = required   |   slug is referenced by 'category_slug' in the Packages sheet"
+    )
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -475,13 +522,14 @@ def main():
     build_addons_sheet(wb)
     build_lists_sheet(wb)
     build_destinations_sheet(wb)
+    build_categories_sheet(wb)
 
     out = "package_template.xlsx"
     wb.save(out)
     print(f"✅  Template saved → {out}")
     print()
     print("Sheets:")
-    print("  1. Packages     — core package fields (one row per package)")
+    print("  1. Packages     — core package fields; destination_slug → Destinations; category_slug → Categories")
     print("  2. Itinerary    — day-by-day plan with optional photo URL per day")
     print("  3. Hotels       — accommodation options")
     print("  4. Transport    — transport options")
@@ -489,6 +537,11 @@ def main():
     print("  6. Lists        — inclusions / exclusions / booking_rules / travel_rules")
     print("                    (one item per row — colour-coded by type)")
     print("  7. Destinations — country landing pages (slug, images, description)")
+    print("  8. Categories   — package categories (slug, name, description, icon)")
+    print()
+    print("Relationship columns:")
+    print("  Packages.destination_slug → must match a slug in the Destinations sheet")
+    print("  Packages.category_slug    → must match a slug in the Categories sheet")
     print()
     print("Next steps:")
     print("  1. Fill in your data (delete example rows first).")

@@ -1,3 +1,26 @@
+// ─── Destination ─────────────────────────────────────────────────────────────
+
+export interface ApiDestination {
+  id: number;
+  slug: string;
+  name: string;
+  description?: string;
+  image_url?: string;
+  banner_url?: string;
+  is_featured: boolean;
+  created_at: string;
+}
+
+// ─── Category ────────────────────────────────────────────────────────────────
+
+export interface ApiCategory {
+  id: number;
+  slug: string;
+  name: string;
+  description?: string;
+  icon?: string;
+}
+
 // ─── Package ────────────────────────────────────────────────────────────────
 
 export interface ItineraryDay {
@@ -6,6 +29,7 @@ export interface ItineraryDay {
   description: string;
   meals: string;
   overnight?: string;
+  image_url?: string;
 }
 
 export interface HotelOption {
@@ -37,7 +61,9 @@ export interface ApiPackage {
   id: number;
   title: string;
   country: string;
-  category: string;
+  destination_id?: number;
+  category_id?: number;
+  category?: string;
   state?: string;
   duration: string;
   duration_days?: number;
@@ -93,4 +119,5 @@ export interface EnquiryPayload {
   subject?: string;
   message: string;
   package_name?: string;
+  package_id?: number;
 }
