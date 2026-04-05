@@ -12,14 +12,47 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.api.v1.api import api_router
-from app.db.session import engine
+from app.db.session import engine, SessionLocal
 from app.db.base import Base  # noqa: F401 — ensures models are registered
+
+
+def _seed_admin() -> None:
+    """Create or update the default admin user on every startup."""
+    from app.models.user import User
+    from app.core.security import hash_password
+
+    db = SessionLocal()
+    try:
+        admin = db.query(User).filter(User.email == settings.admin_email).first()
+        if admin:
+            admin.is_admin = 1
+            admin.password = hash_password(settings.admin_password)
+            db.commit()
+        else:
+            admin = User(
+                name=settings.admin_name,
+                email=settings.admin_email,
+                password=hash_password(settings.admin_password),
+                is_admin=1,
+            )
+            db.add(admin)
+            db.commit()
+    finally:
+        db.close()
+
+    print("\n" + "=" * 50)
+    print("  ADMIN CREDENTIALS")
+    print("=" * 50)
+    print(f"  Email   : {settings.admin_email}")
+    print(f"  Password: {settings.admin_password}")
+    print("=" * 50 + "\n")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # ── startup ──────────────────────────────────────────────────────────────
     setup_logging()
+    _seed_admin()
     yield
     # ── shutdown ─────────────────────────────────────────────────────────────
     engine.dispose()

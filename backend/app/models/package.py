@@ -43,6 +43,9 @@ class Package(Base):
     booking_rules = Column(JSON)  # list[str]
     travel_rules  = Column(JSON)  # list[str]
 
+    # Visibility
+    is_active = Column(Integer, default=1)  # 1 = active, 0 = archived/hidden
+
     # Legacy / misc
     available_dates = Column(String)
     max_group_size  = Column(Integer)

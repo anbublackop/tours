@@ -78,6 +78,7 @@ class PackageListRead(BaseModel):
     rating: Optional[str] = None
     reviews_count: Optional[int] = None
     highlights: Optional[list] = None
+    is_active: Optional[int] = 1
 
     model_config = {"from_attributes": True}
 

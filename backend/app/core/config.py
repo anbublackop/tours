@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     # ALLOWED_ORIGINS=https://yourdomain.com,http://localhost:8080
     allowed_origins: str = "http://localhost:8080,http://localhost:3000"
 
+    # Default admin credentials — seeded automatically on startup
+    admin_email: str = "admin@yatrasathi.com"
+    admin_password: str = "Admin@YatraSathi2024"
+    admin_name: str = "Super Admin"
+
     @field_validator("secret_key")
     @classmethod
     def secret_key_must_be_strong(cls, v: str) -> str:

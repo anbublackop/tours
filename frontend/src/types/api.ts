@@ -52,7 +52,6 @@ export interface Addon {
   id: string;
   name: string;
   description: string;
-  price: number;
   icon?: string;
 }
 
@@ -74,6 +73,7 @@ export interface ApiPackage {
   rating?: string;
   reviews_count?: number;
   highlights?: string[];
+  is_active?: number;
 
   // Only present on detail endpoint
   description?: string;

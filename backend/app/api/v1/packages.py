@@ -30,7 +30,7 @@ def list_packages(
     Priority for location filter:  destination_id > destination_slug > country.
     Priority for category filter:  category_id > category_slug > category.
     """
-    q = db.query(Package)
+    q = db.query(Package).filter(Package.is_active == 1)
 
     # ── Destination filter ────────────────────────────────────────────────────
     if destination_id:
@@ -59,6 +59,15 @@ def list_packages(
     if limit:
         q = q.limit(limit)
     return q.all()
+
+
+@router.get("/all", response_model=list[PackageListRead])
+def list_all_packages_route(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    """Admin only — list ALL packages including archived."""
+    return db.query(Package).order_by(Package.id.desc()).all()
 
 
 @router.get("/{package_id}", response_model=PackageRead)
@@ -106,13 +115,30 @@ def update_package(
     return pkg
 
 
+@router.patch("/{package_id}/archive", response_model=PackageListRead)
+def toggle_archive(
+    package_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    """Admin only — toggle a package's active/archived state."""
+    pkg = db.query(Package).filter(Package.id == package_id).first()
+    if not pkg:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Package not found")
+    pkg.is_active = 0 if pkg.is_active else 1
+    pkg.updated_at = str(datetime.utcnow())
+    db.commit()
+    db.refresh(pkg)
+    return pkg
+
+
 @router.delete("/{package_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_package(
     package_id: int,
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin only — delete a package."""
+    """Admin only — permanently delete a package."""
     pkg = db.query(Package).filter(Package.id == package_id).first()
     if not pkg:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Package not found")

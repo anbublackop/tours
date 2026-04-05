@@ -29,7 +29,6 @@ const PackageDetail = () => {
   const [showBooking, setShowBooking] = useState(false);
   const [members, setMembers] = useState(2);
   const [travelDate, setTravelDate] = useState("");
-  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -69,16 +68,12 @@ const PackageDetail = () => {
   const hotel     = hotels.find((h) => h.id === selectedHotel);
   const trans     = transport.find((t) => t.id === selectedTransport);
   const nights    = Math.max(itinerary.length - 1, (pkg.duration_days ?? 1) - 1);
-  const addonTotal  = addons.filter((a) => selectedAddons.includes(a.id)).reduce((s, a) => s + a.price, 0);
   const hotelTotal  = (hotel?.pricePerNight ?? 0) * nights;
-  const totalPerPerson = pkg.price + hotelTotal + (trans?.price ?? 0) + addonTotal;
+  const totalPerPerson = pkg.price + hotelTotal + (trans?.price ?? 0);
   const grandTotal = totalPerPerson * members;
 
-  const toggleAddon = (addonId: string) =>
-    setSelectedAddons((prev) => prev.includes(addonId) ? prev.filter((a) => a !== addonId) : [...prev, addonId]);
-
   const handleConfirmBooking = () => {
-    navigate(`/checkout?package=${pkg.id}&members=${members}&date=${travelDate}&hotel=${selectedHotel}&transport=${selectedTransport}&addons=${selectedAddons.join(",")}`);
+    navigate(`/checkout?package=${pkg.id}&members=${members}&date=${travelDate}&hotel=${selectedHotel}&transport=${selectedTransport}`);
   };
 
   return (
@@ -208,17 +203,43 @@ const PackageDetail = () => {
                     ))}
                   </TabsContent>
 
-                  <TabsContent value="addons" className="mt-4 space-y-3">
-                    {addons.map((a) => (
-                      <div key={a.id} className="flex items-start gap-3 border border-border rounded-lg p-4">
-                        <span className="mt-1 w-2 h-2 rounded-full bg-primary shrink-0" />
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-foreground">{a.name}</h4>
-                          <p className="text-sm text-muted-foreground">{a.description}</p>
-                        </div>
-                        <span className="text-base font-bold text-primary shrink-0">₹{a.price.toLocaleString()}</span>
+                  <TabsContent value="addons" className="mt-4">
+                    <Card className="border-primary/10">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="font-display text-base flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shrink-0">
+                            <span className="text-[10px] text-white font-bold">+</span>
+                          </span>
+                          Optional Add-ons
+                        </CardTitle>
+                        <p className="text-xs text-muted-foreground">Contact us to include any of these extras in your trip.</p>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        {addons.map((a) => (
+                          <div key={a.id} className="flex items-start gap-2.5 text-sm">
+                            <span className="w-4 h-4 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mt-0.5">
+                              {a.icon
+                                ? <span className="text-[10px] leading-none">{a.icon}</span>
+                                : <span className="w-1.5 h-1.5 rounded-full bg-primary block" />}
+                            </span>
+                            <div>
+                              <span className="font-medium text-foreground">{a.name}</span>
+                              {a.description && <span className="text-muted-foreground"> — {a.description}</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                      <div className="px-6 pb-5 pt-1">
+                        <EnquiryModal
+                          trigger={
+                            <button className="w-full py-2.5 rounded-xl border border-primary text-primary text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200">
+                              Enquire Now about Add-ons
+                            </button>
+                          }
+                          packageName={pkg.title}
+                        />
                       </div>
-                    ))}
+                    </Card>
                   </TabsContent>
                 </Tabs>
               )}
@@ -302,7 +323,6 @@ const PackageDetail = () => {
                     <div className="flex justify-between"><span className="text-muted-foreground">Base Price</span><span>₹{pkg.price.toLocaleString()}</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Hotel ({hotel?.name ?? "—"})</span><span>₹{hotelTotal.toLocaleString()}</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Transport</span><span>₹{(trans?.price ?? 0).toLocaleString()}</span></div>
-                    {addonTotal > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Add-ons</span><span>₹{addonTotal.toLocaleString()}</span></div>}
                     <Separator />
                     <div className="flex justify-between font-bold text-base"><span>Total / person</span><span className="text-primary">₹{totalPerPerson.toLocaleString()}</span></div>
                   </div>
@@ -345,9 +365,6 @@ const PackageDetail = () => {
                       <div className="flex justify-between"><span>Base Package × {members}</span><span>₹{(pkg.price * members).toLocaleString()}</span></div>
                       <div className="flex justify-between"><span>Accommodation ({hotel?.name}) × {nights} nights × {members}</span><span>₹{(hotelTotal * members).toLocaleString()}</span></div>
                       <div className="flex justify-between"><span>Transport ({trans?.type}) × {members}</span><span>₹{((trans?.price ?? 0) * members).toLocaleString()}</span></div>
-                      {addons.filter((a) => selectedAddons.includes(a.id)).map((a) => (
-                        <div key={a.id} className="flex justify-between"><span>{a.name} × {members}</span><span>₹{(a.price * members).toLocaleString()}</span></div>
-                      ))}
                       <Separator />
                       <div className="flex justify-between text-lg font-bold"><span>Grand Total</span><span className="text-primary">₹{grandTotal.toLocaleString()}</span></div>
                     </div>
