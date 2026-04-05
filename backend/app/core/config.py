@@ -1,7 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from typing import List
+
 
 class Settings(BaseSettings):
-    app_name: str
+    app_name: str = "TourBackend"
     database_url: str
     secret_key: str
     access_token_expire_minutes: int = 30
@@ -9,10 +12,30 @@ class Settings(BaseSettings):
     env: str = "development"
     algorithm: str = "HS256"
 
+    # Comma-separated origins in .env, e.g.:
+    # ALLOWED_ORIGINS=https://yourdomain.com,http://localhost:8080
+    allowed_origins: str = "http://localhost:8080,http://localhost:3000"
+
+    @field_validator("secret_key")
+    @classmethod
+    def secret_key_must_be_strong(cls, v: str) -> str:
+        if len(v) < 32:
+            raise ValueError("SECRET_KEY must be at least 32 characters")
+        return v
+
+    @property
+    def cors_origins(self) -> List[str]:
+        return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+
+    @property
+    def is_production(self) -> bool:
+        return self.env.lower() == "production"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore"
+        extra="ignore",
     )
+
 
 settings = Settings()

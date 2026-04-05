@@ -1,0 +1,15 @@
+# Development overrides — applied automatically by docker-compose.
+# DO NOT use in production.
+version: "3.9"
+
+services:
+  api:
+    # Hot-reload in dev
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      # Live-mount source so changes are picked up without rebuilding
+      - .:/app
+    environment:
+      ENV: development

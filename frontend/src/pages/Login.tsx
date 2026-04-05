@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, isAdmin } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -21,15 +22,15 @@ const Login = () => {
     try {
       await login(form.email, form.password);
       toast.success("Welcome back!");
-      // isAdmin reflects state before this login; read from context after update via navigate
+      const next = searchParams.get("next");
+      if (next) {
+        navigate(next, { replace: true });
+        return;
+      }
       // Re-read from localStorage so we pick up the freshly saved value
       const raw = localStorage.getItem("yatrasathi_auth");
       const auth = raw ? JSON.parse(raw) : null;
-      if (auth?.user?.is_admin === 1) {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard");
-      }
+      navigate(auth?.user?.is_admin === 1 ? "/admin" : "/dashboard", { replace: true });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Login failed";
       toast.error(message);

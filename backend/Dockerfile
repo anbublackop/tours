@@ -1,33 +1,39 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12-slim
+# ── Stage 1: dependency builder ──────────────────────────────────────────────
+FROM python:3.12-slim AS builder
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    curl \
     libffi-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-#for using argon2, which is a dependency of passlib
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-RUN rustc --version 
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file into the container
 COPY requirements.txt ./
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-# Install Python packages
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
-COPY . .
+# ── Stage 2: runtime image ────────────────────────────────────────────────────
+FROM python:3.12-slim AS runtime
 
-# Expose the port the app runs on
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Run as non-root
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+WORKDIR /app
+
+# Copy only installed packages from builder
+COPY --from=builder /install /usr/local
+
+# Copy application code
+COPY --chown=appuser:appgroup . .
+
+USER appuser
+
 EXPOSE 8000
 
-# Define the command to run the application using uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
