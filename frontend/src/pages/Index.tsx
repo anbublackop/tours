@@ -11,6 +11,7 @@ import { api } from "@/lib/api";
 import { getCategoryUi } from "@/lib/categoryConfig";
 import type { ApiCategory, ApiDestination, ApiPackage } from "@/types/api";
 import heroBanner from "@/assets/hero-banner.jpg";
+import { useTranslation } from "react-i18next";
 
 // Fallback gradient colours keyed by slug — used when the API doesn't provide one
 const DEST_COLORS: Record<string, string> = {
@@ -24,6 +25,7 @@ const DEST_COLORS: Record<string, string> = {
 const DEFAULT_COLOR = "from-primary to-accent";
 
 const Index = () => {
+  const { t } = useTranslation();
   const [featured, setFeatured]       = useState<ApiPackage[]>([]);
   const [destinations, setDestinations] = useState<ApiDestination[]>([]);
   const [categories, setCategories]   = useState<ApiCategory[]>([]);
@@ -33,6 +35,13 @@ const Index = () => {
     api.get<ApiDestination[]>("/destinations").then(setDestinations).catch(() => {});
     api.get<ApiCategory[]>("/categories").then(setCategories).catch(() => {});
   }, []);
+
+  const stats = [
+    { icon: Users,  label: t("home.statsTravellers"), value: "15,000+", color: "text-primary" },
+    { icon: Star,   label: t("home.statsRating"),      value: "4.8/5",   color: "text-accent" },
+    { icon: Shield, label: t("home.statsExperience"),  value: "10+",     color: "text-primary" },
+    { icon: Search, label: t("home.statsPackages"),    value: "50+",     color: "text-accent" },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -50,29 +59,24 @@ const Index = () => {
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="max-w-3xl">
             <div className="mb-6">
               <span className="inline-block px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-white text-sm font-medium mb-4 border border-white/20">
-                🌟 Premium Travel Experiences
+                {t("home.premiumBadge")}
               </span>
             </div>
             <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
-              Discover the Magic of <span className="text-accent">Asia</span>
+              {t("home.heroTitle")} <span className="text-accent">{t("home.heroTitleHighlight")}</span>
             </h1>
             <p className="text-lg md:text-xl text-white/70 mb-8 font-lexend leading-relaxed max-w-2xl">
-              Handcrafted tour packages for unforgettable journeys across Asia. From royal palaces to Himalayan peaks, modern cities to ancient temples.
+              {t("home.heroSubtitle")}
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Stats — static marketing copy */}
+      {/* Stats */}
       <section className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 py-16 border-y border-border/50">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { icon: Users,  label: "Happy Travellers", value: "15,000+", color: "text-primary" },
-              { icon: Star,   label: "Customer Rating",  value: "4.8/5",   color: "text-accent" },
-              { icon: Shield, label: "Years Experience", value: "10+",     color: "text-primary" },
-              { icon: Search, label: "Tour Packages",    value: "50+",     color: "text-accent" },
-            ].map((stat, index) => (
+            {stats.map((stat, index) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="text-center group">
                 <div className="bg-white dark:bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-border/50">
                   <div className={`w-16 h-16 ${stat.color} bg-current/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
@@ -87,13 +91,13 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Destinations — static navigation cards */}
+      {/* Destinations */}
       <section className="py-20 bg-gradient-to-b from-background to-muted/30">
         <div className="container">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">🌍 Explore Destinations</div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">Choose Your <span className="text-primary">Destination</span></h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body">Explore the rich cultures and breathtaking landscapes of Asia's most captivating destinations.</p>
+            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">{t("home.destinationsBadge")}</div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">{t("home.destinationsTitle")} <span className="text-primary">{t("home.destinationsTitleHighlight")}</span></h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body">{t("home.destinationsSubtitle")}</p>
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {destinations.map((dest, index) => {
@@ -110,7 +114,7 @@ const Index = () => {
                       <h3 className="font-display text-3xl font-bold text-white mb-2 group-hover:text-accent transition-colors duration-300">{dest.name}</h3>
                       {dest.description && <p className="text-white/90 text-sm mb-4 font-body leading-relaxed">{dest.description}</p>}
                       <div className="flex items-center text-accent font-semibold text-sm group-hover:text-white transition-colors duration-300">
-                        Explore Packages <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                        {t("home.explorePackages")} <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                       </div>
                     </div>
                   </motion.div>
@@ -125,9 +129,9 @@ const Index = () => {
       <section className="py-20 bg-background">
         <div className="container">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
-            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">🗺️ Travel Styles</div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">Browse by <span className="text-primary">Category</span></h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body">Find your perfect trip style — from wild jungles to serene temples</p>
+            <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">{t("home.categoriesBadge")}</div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">{t("home.categoriesTitle")} <span className="text-primary">{t("home.categoriesTitleHighlight")}</span></h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body">{t("home.categoriesSubtitle")}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -144,20 +148,13 @@ const Index = () => {
                 >
                   <Link to={`/packages/india?category=${cat.slug}`} className="group block">
                     <div className={`relative h-52 rounded-2xl overflow-hidden bg-gradient-to-br ${ui.gradient} shadow-lg hover:shadow-2xl ${ui.shadow} transition-all duration-500 hover:-translate-y-2`}>
-
-                      {/* Decorative circles */}
                       <div className="absolute -top-8 -right-8 w-44 h-44 bg-white/10 rounded-full pointer-events-none" />
                       <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-black/10 rounded-full pointer-events-none" />
                       <div className="absolute top-1/2 right-6 w-16 h-16 bg-white/5 rounded-full pointer-events-none" />
-
-                      {/* Content */}
                       <div className="absolute inset-0 flex flex-col justify-between p-7">
-                        {/* Icon box */}
                         <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
                           <Icon className="w-7 h-7 text-white" strokeWidth={1.5} />
                         </div>
-
-                        {/* Text + arrow */}
                         <div>
                           <p className="text-white/70 text-sm font-body mb-1 group-hover:text-white/90 transition-colors duration-300">
                             {cat.description ?? ui.description}
@@ -179,16 +176,16 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Packages — dynamic from API */}
+      {/* Featured Packages */}
       <section className="py-20 bg-gradient-to-b from-background via-muted/20 to-background">
         <div className="container">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-            <div className="inline-block px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">⭐ Featured Packages</div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">Popular <span className="text-accent">Tour Packages</span></h2>
-            <p className="text-muted-foreground text-lg font-body max-w-2xl mx-auto">Our most loved and highly-rated tour experiences, crafted for unforgettable adventures</p>
+            <div className="inline-block px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">{t("home.featuredBadge")}</div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">{t("home.featuredTitle")} <span className="text-accent">{t("home.featuredTitleHighlight")}</span></h2>
+            <p className="text-muted-foreground text-lg font-body max-w-2xl mx-auto">{t("home.featuredSubtitle")}</p>
           </motion.div>
           {featured.length === 0 ? (
-            <p className="text-center text-muted-foreground">Loading packages…</p>
+            <p className="text-center text-muted-foreground">{t("home.loadingPackages")}</p>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featured.map((pkg, index) => (
@@ -206,12 +203,12 @@ const Index = () => {
         <div className="absolute inset-0 bg-black/10" />
         <div className="container text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <div className="inline-block px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white text-sm font-medium mb-6 border border-white/20">🚀 Ready for Adventure?</div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">Can't Find Your Perfect Trip?</h2>
-            <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto font-body leading-relaxed">We customize tours based on your unique preferences. Tell us your dream destination and we'll craft the perfect itinerary just for you!</p>
+            <div className="inline-block px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white text-sm font-medium mb-6 border border-white/20">{t("home.ctaBadge")}</div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">{t("home.ctaTitle")}</h2>
+            <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto font-body leading-relaxed">{t("home.ctaSubtitle")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <EnquiryModal trigger={<Button size="lg" className="bg-white text-primary hover:bg-white/90 font-body font-semibold px-8 py-4 rounded-full shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105">Send an Enquiry</Button>} />
-              <span className="text-white/70 text-sm">or call us at +91 98765 43210</span>
+              <EnquiryModal trigger={<Button size="lg" className="bg-white text-primary hover:bg-white/90 font-body font-semibold px-8 py-4 rounded-full shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105">{t("home.ctaEnquiry")}</Button>} />
+              <span className="text-white/70 text-sm">{t("home.ctaCallUs")}</span>
             </div>
           </motion.div>
         </div>

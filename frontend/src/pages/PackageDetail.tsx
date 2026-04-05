@@ -15,10 +15,12 @@ import Footer from "@/components/layout/Footer";
 import EnquiryModal from "@/components/EnquiryModal";
 import { api } from "@/lib/api";
 import type { ApiPackage, HotelOption, TransportOption } from "@/types/api";
+import { useTranslation } from "react-i18next";
 
 const PackageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [pkg, setPkg] = useState<ApiPackage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ const PackageDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col"><Navbar />
-        <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground text-lg">Loading…</p></div>
+        <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground text-lg">{t("packageDetail.loading")}</p></div>
         <Footer />
       </div>
     );
@@ -54,7 +56,7 @@ const PackageDetail = () => {
   if (!pkg) {
     return (
       <div className="min-h-screen flex flex-col"><Navbar />
-        <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground text-lg">Package not found.</p></div>
+        <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground text-lg">{t("packageDetail.notFound")}</p></div>
         <Footer />
       </div>
     );
@@ -101,7 +103,7 @@ const PackageDetail = () => {
             <div className="lg:col-span-2 space-y-8">
               {/* About */}
               <Card>
-                <CardHeader><CardTitle className="font-display">About This Trip</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="font-display">{t("packageDetail.aboutTrip")}</CardTitle></CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">{pkg.description}</p>
                   <div className="flex flex-wrap gap-2 mt-4">
@@ -113,7 +115,7 @@ const PackageDetail = () => {
               {/* Itinerary */}
               {itinerary.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="font-display">Day-wise Itinerary</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="font-display">{t("packageDetail.itinerary")}</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     {itinerary.map((day) => (
                       <div key={day.day} className="border border-border rounded-lg overflow-hidden">
@@ -150,7 +152,7 @@ const PackageDetail = () => {
                                 </span>
                                 {day.overnight && (
                                   <span className="flex items-center gap-1.5 bg-muted/60 rounded-full px-3 py-1.5 text-muted-foreground">
-                                    🏨 <span>Overnight: {day.overnight}</span>
+                                    🏨 <span>{t("packageDetail.overnight")}: {day.overnight}</span>
                                   </span>
                                 )}
                               </div>
@@ -167,9 +169,9 @@ const PackageDetail = () => {
               {(hotels.length > 0 || transport.length > 0 || addons.length > 0) && (
                 <Tabs defaultValue="hotels">
                   <TabsList className="w-full">
-                    <TabsTrigger value="hotels" className="flex-1">Accommodation</TabsTrigger>
-                    <TabsTrigger value="transport" className="flex-1">Transport</TabsTrigger>
-                    <TabsTrigger value="addons" className="flex-1">Add-ons</TabsTrigger>
+                    <TabsTrigger value="hotels" className="flex-1">{t("packageDetail.accommodation")}</TabsTrigger>
+                    <TabsTrigger value="transport" className="flex-1">{t("packageDetail.transport")}</TabsTrigger>
+                    <TabsTrigger value="addons" className="flex-1">{t("packageDetail.addons")}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="hotels" className="mt-4 space-y-3">
@@ -210,9 +212,9 @@ const PackageDetail = () => {
                           <span className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shrink-0">
                             <span className="text-[10px] text-white font-bold">+</span>
                           </span>
-                          Optional Add-ons
+                          {t("packageDetail.optionalAddons")}
                         </CardTitle>
-                        <p className="text-xs text-muted-foreground">Contact us to include any of these extras in your trip.</p>
+                        <p className="text-xs text-muted-foreground">{t("packageDetail.addonsNote")}</p>
                       </CardHeader>
                       <CardContent className="space-y-2">
                         {addons.map((a) => (
@@ -233,7 +235,7 @@ const PackageDetail = () => {
                         <EnquiryModal
                           trigger={
                             <button className="w-full py-2.5 rounded-xl border border-primary text-primary text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200">
-                              Enquire Now about Add-ons
+                              {t("packageDetail.enquireAddons")}
                             </button>
                           }
                           packageName={pkg.title}
@@ -253,7 +255,7 @@ const PackageDetail = () => {
                         {/* <span className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shrink-0">
                           <Check className="w-3 h-3 text-white" strokeWidth={3} />
                         </span> */}
-                        Inclusions
+                        {t("packageDetail.inclusions")}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
@@ -273,7 +275,7 @@ const PackageDetail = () => {
                         {/* <span className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center shrink-0">
                           <X className="w-3 h-3 text-white" strokeWidth={3} />
                         </span> */}
-                        Exclusions
+                        {t("packageDetail.exclusions")}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
@@ -294,11 +296,11 @@ const PackageDetail = () => {
               {((pkg.booking_rules?.length ?? 0) > 0 || (pkg.travel_rules?.length ?? 0) > 0) && (
                 <div className="grid md:grid-cols-2 gap-6">
                   <Card>
-                    <CardHeader><CardTitle className="font-display text-base">Booking Rules</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="font-display text-base">{t("packageDetail.bookingRules")}</CardTitle></CardHeader>
                     <CardContent><ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">{(pkg.booking_rules ?? []).map((r) => <li key={r}>{r}</li>)}</ul></CardContent>
                   </Card>
                   <Card>
-                    <CardHeader><CardTitle className="font-display text-base">Travel Rules</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="font-display text-base">{t("packageDetail.travelRules")}</CardTitle></CardHeader>
                     <CardContent><ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">{(pkg.travel_rules ?? []).map((r) => <li key={r}>{r}</li>)}</ul></CardContent>
                   </Card>
                 </div>
@@ -312,22 +314,22 @@ const PackageDetail = () => {
                   <CardTitle className="font-display">
                     <span className="text-3xl text-primary">₹{pkg.price.toLocaleString()}</span>
                     {pkg.original_price && <span className="text-base text-muted-foreground line-through ml-2">₹{pkg.original_price.toLocaleString()}</span>}
-                    <span className="block text-sm font-normal text-muted-foreground mt-1">per person (base price)</span>
+                    <span className="block text-sm font-normal text-muted-foreground mt-1">{t("packageDetail.perPersonBase")}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button size="lg" className="w-full font-semibold" onClick={() => { setShowBooking(true); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }}>Book Now</Button>
-                  <EnquiryModal trigger={<Button variant="outline" size="lg" className="w-full">Enquire Now</Button>} packageName={pkg.title} />
+                  <Button size="lg" className="w-full font-semibold" onClick={() => { setShowBooking(true); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }}>{t("packageDetail.bookNow")}</Button>
+                  <EnquiryModal trigger={<Button variant="outline" size="lg" className="w-full">{t("packageDetail.enquireNow")}</Button>} packageName={pkg.title} />
                   <Separator />
                   <div className="text-sm space-y-2">
-                    <div className="flex justify-between"><span className="text-muted-foreground">Base Price</span><span>₹{pkg.price.toLocaleString()}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Hotel ({hotel?.name ?? "—"})</span><span>₹{hotelTotal.toLocaleString()}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Transport</span><span>₹{(trans?.price ?? 0).toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">{t("packageDetail.basePrice")}</span><span>₹{pkg.price.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">{t("packageDetail.hotel")} ({hotel?.name ?? "—"})</span><span>₹{hotelTotal.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">{t("packageDetail.transportLabel")}</span><span>₹{(trans?.price ?? 0).toLocaleString()}</span></div>
                     <Separator />
-                    <div className="flex justify-between font-bold text-base"><span>Total / person</span><span className="text-primary">₹{totalPerPerson.toLocaleString()}</span></div>
+                    <div className="flex justify-between font-bold text-base"><span>{t("packageDetail.totalPerPerson")}</span><span className="text-primary">₹{totalPerPerson.toLocaleString()}</span></div>
                   </div>
                   <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
-                    <Button variant="outline" className="w-full gap-2 mt-2">💬 Chat on WhatsApp</Button>
+                    <Button variant="outline" className="w-full gap-2 mt-2">{t("packageDetail.chatWhatsapp")}</Button>
                   </a>
                 </CardContent>
               </Card>
@@ -338,20 +340,20 @@ const PackageDetail = () => {
           {showBooking && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-12">
               <Card>
-                <CardHeader><CardTitle className="font-display text-2xl">Complete Your Booking</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="font-display text-2xl">{t("packageDetail.completeBooking")}</CardTitle></CardHeader>
                 <CardContent>
                   <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div><Label>Travel Date</Label><Input type="date" value={travelDate} onChange={(e) => setTravelDate(e.target.value)} min={new Date().toISOString().split("T")[0]} /></div>
-                    <div><Label>Number of Members</Label><Input type="number" min={1} max={20} value={members} onChange={(e) => setMembers(Number(e.target.value))} /></div>
+                    <div><Label>{t("packageDetail.travelDate")}</Label><Input type="date" value={travelDate} onChange={(e) => setTravelDate(e.target.value)} min={new Date().toISOString().split("T")[0]} /></div>
+                    <div><Label>{t("packageDetail.numMembers")}</Label><Input type="number" min={1} max={20} value={members} onChange={(e) => setMembers(Number(e.target.value))} /></div>
                     <div>
-                      <Label>Hotel</Label>
+                      <Label>{t("packageDetail.accommodation")}</Label>
                       <Select value={selectedHotel} onValueChange={setSelectedHotel}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{hotels.map((h) => <SelectItem key={h.id} value={h.id}>{h.name} (₹{h.pricePerNight}/night)</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <Label>Transport</Label>
+                      <Label>{t("packageDetail.transport")}</Label>
                       <Select value={selectedTransport} onValueChange={setSelectedTransport}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{transport.map((t) => <SelectItem key={t.id} value={t.id}>{t.type} (₹{t.price})</SelectItem>)}</SelectContent>
@@ -360,19 +362,19 @@ const PackageDetail = () => {
                   </div>
                   <Separator className="my-6" />
                   <div className="bg-muted rounded-lg p-6">
-                    <h3 className="font-display text-lg font-semibold mb-4">Price Breakdown</h3>
+                    <h3 className="font-display text-lg font-semibold mb-4">{t("packageDetail.priceBreakdown")}</h3>
                     <div className="space-y-2 text-sm">
-                      <div className="flex justify-between"><span>Base Package × {members}</span><span>₹{(pkg.price * members).toLocaleString()}</span></div>
-                      <div className="flex justify-between"><span>Accommodation ({hotel?.name}) × {nights} nights × {members}</span><span>₹{(hotelTotal * members).toLocaleString()}</span></div>
-                      <div className="flex justify-between"><span>Transport ({trans?.type}) × {members}</span><span>₹{((trans?.price ?? 0) * members).toLocaleString()}</span></div>
+                      <div className="flex justify-between"><span>{t("packageDetail.basePackage")} × {members}</span><span>₹{(pkg.price * members).toLocaleString()}</span></div>
+                      <div className="flex justify-between"><span>{t("packageDetail.accommodation2")} ({hotel?.name}) × {nights} nights × {members}</span><span>₹{(hotelTotal * members).toLocaleString()}</span></div>
+                      <div className="flex justify-between"><span>{t("packageDetail.transport")} ({trans?.type}) × {members}</span><span>₹{((trans?.price ?? 0) * members).toLocaleString()}</span></div>
                       <Separator />
-                      <div className="flex justify-between text-lg font-bold"><span>Grand Total</span><span className="text-primary">₹{grandTotal.toLocaleString()}</span></div>
+                      <div className="flex justify-between text-lg font-bold"><span>{t("packageDetail.grandTotal")}</span><span className="text-primary">₹{grandTotal.toLocaleString()}</span></div>
                     </div>
                   </div>
                   <div className="flex gap-4 mt-6 justify-end">
-                    <Button variant="outline" onClick={() => setShowBooking(false)}>Cancel</Button>
+                    <Button variant="outline" onClick={() => setShowBooking(false)}>{t("packageDetail.cancel")}</Button>
                     <Button size="lg" onClick={handleConfirmBooking} disabled={!travelDate} className="font-semibold gap-2">
-                      <Calendar className="w-4 h-4" /> Confirm Booking
+                      <Calendar className="w-4 h-4" /> {t("packageDetail.confirmBooking")}
                     </Button>
                   </div>
                 </CardContent>

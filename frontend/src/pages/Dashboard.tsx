@@ -10,6 +10,7 @@ import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import type { ApiBooking } from "@/types/api";
+import { useTranslation } from "react-i18next";
 
 const statusColor = (s: string) => {
   if (s === "confirmed") return "bg-secondary text-secondary-foreground";
@@ -20,6 +21,7 @@ const statusColor = (s: string) => {
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<ApiBooking[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +29,7 @@ const Dashboard = () => {
     if (!user) { navigate("/login"); return; }
     api.get<ApiBooking[]>("/bookings/my", true)
       .then(setBookings)
-      .catch(() => toast.error("Failed to load bookings"))
+      .catch(() => toast.error(t("dashboard.failedLoad")))
       .finally(() => setLoading(false));
   }, [user, navigate]);
 
@@ -35,9 +37,9 @@ const Dashboard = () => {
     try {
       const updated = await api.put<ApiBooking>(`/bookings/${bookingId}/cancel`, {}, true);
       setBookings((prev) => prev.map((b) => b.id === bookingId ? updated : b));
-      toast.success("Booking cancelled successfully.");
+      toast.success(t("dashboard.bookingCancelled"));
     } catch {
-      toast.error("Failed to cancel booking.");
+      toast.error(t("dashboard.failedCancel"));
     }
   };
 
@@ -48,22 +50,22 @@ const Dashboard = () => {
         <div className="container">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="font-display text-3xl font-bold text-foreground">My Dashboard</h1>
-              <p className="text-muted-foreground">Welcome back, {user?.name ?? "Traveller"}</p>
+              <h1 className="font-display text-3xl font-bold text-foreground">{t("dashboard.title")}</h1>
+              <p className="text-muted-foreground">{t("dashboard.welcomeBack")}, {user?.name ?? t("dashboard.traveller")}</p>
             </div>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4 mb-8">
-            <Card><CardContent className="p-4 flex items-center gap-3"><Package className="w-8 h-8 text-primary" /><div><p className="text-2xl font-bold">{bookings.length}</p><p className="text-sm text-muted-foreground">Total Bookings</p></div></CardContent></Card>
-            <Card><CardContent className="p-4 flex items-center gap-3"><Calendar className="w-8 h-8 text-secondary" /><div><p className="text-2xl font-bold">{bookings.filter((b) => b.status === "confirmed").length}</p><p className="text-sm text-muted-foreground">Confirmed</p></div></CardContent></Card>
-            <Card><CardContent className="p-4 flex items-center gap-3"><Users className="w-8 h-8 text-accent" /><div><p className="text-2xl font-bold">{bookings.reduce((s, b) => s + b.num_people, 0)}</p><p className="text-sm text-muted-foreground">Total Travellers</p></div></CardContent></Card>
+            <Card><CardContent className="p-4 flex items-center gap-3"><Package className="w-8 h-8 text-primary" /><div><p className="text-2xl font-bold">{bookings.length}</p><p className="text-sm text-muted-foreground">{t("dashboard.totalBookings")}</p></div></CardContent></Card>
+            <Card><CardContent className="p-4 flex items-center gap-3"><Calendar className="w-8 h-8 text-secondary" /><div><p className="text-2xl font-bold">{bookings.filter((b) => b.status === "confirmed").length}</p><p className="text-sm text-muted-foreground">{t("dashboard.confirmed")}</p></div></CardContent></Card>
+            <Card><CardContent className="p-4 flex items-center gap-3"><Users className="w-8 h-8 text-accent" /><div><p className="text-2xl font-bold">{bookings.reduce((s, b) => s + b.num_people, 0)}</p><p className="text-sm text-muted-foreground">{t("dashboard.totalTravellers")}</p></div></CardContent></Card>
           </div>
 
-          <h2 className="font-display text-xl font-semibold mb-4">My Bookings</h2>
+          <h2 className="font-display text-xl font-semibold mb-4">{t("dashboard.myBookings")}</h2>
           {loading ? (
-            <p className="text-muted-foreground">Loading your bookings…</p>
+            <p className="text-muted-foreground">{t("dashboard.loading")}</p>
           ) : bookings.length === 0 ? (
-            <p className="text-muted-foreground">No bookings yet. <Link to="/" className="text-primary hover:underline">Browse packages</Link></p>
+            <p className="text-muted-foreground">{t("dashboard.noBookings")} <Link to="/" className="text-primary hover:underline">{t("dashboard.browsePackages")}</Link></p>
           ) : (
             <div className="space-y-4">
               {bookings.map((booking) => (
@@ -78,15 +80,15 @@ const Dashboard = () => {
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <span>📋 #{booking.id}</span>
                           <span>📅 {booking.travel_date}</span>
-                          <span>👥 {booking.num_people} members</span>
+                          <span>👥 {booking.num_people} {t("dashboard.members")}</span>
                           <span className="font-semibold text-primary">₹{booking.total_price.toLocaleString()}</span>
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Link to={`/booking/${booking.id}`}><Button variant="outline" size="sm">View Details</Button></Link>
+                        <Link to={`/booking/${booking.id}`}><Button variant="outline" size="sm">{t("dashboard.viewDetails")}</Button></Link>
                         {booking.status !== "cancelled" && (
                           <Button variant="destructive" size="sm" className="gap-1" onClick={() => handleCancel(booking.id)}>
-                            <XCircle className="w-3 h-3" /> Cancel
+                            <XCircle className="w-3 h-3" /> {t("dashboard.cancel")}
                           </Button>
                         )}
                       </div>

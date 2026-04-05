@@ -8,11 +8,13 @@ import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, isAdmin } = useAuth();
+  const { login } = useAuth();
+  const { t } = useTranslation();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
@@ -21,18 +23,17 @@ const Login = () => {
     setLoading(true);
     try {
       await login(form.email, form.password);
-      toast.success("Welcome back!");
+      toast.success(t("login.successToast"));
       const next = searchParams.get("next");
       if (next) {
         navigate(next, { replace: true });
         return;
       }
-      // Re-read from localStorage so we pick up the freshly saved value
       const raw = localStorage.getItem("yatrasathi_auth");
       const auth = raw ? JSON.parse(raw) : null;
       navigate(auth?.user?.is_admin === 1 ? "/admin" : "/dashboard", { replace: true });
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Login failed";
+      const message = err instanceof Error ? err.message : t("login.failedDefault");
       toast.error(message);
     } finally {
       setLoading(false);
@@ -46,19 +47,19 @@ const Login = () => {
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
             <span className="text-3xl mb-2 block">🏔️</span>
-            <CardTitle className="font-display text-2xl">Welcome Back</CardTitle>
-            <p className="text-sm text-muted-foreground">Sign in to your YatraSathi account</p>
+            <CardTitle className="font-display text-2xl">{t("login.welcomeBack")}</CardTitle>
+            <p className="text-sm text-muted-foreground">{t("login.signInAccount")}</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></div>
-              <div><Label>Password</Label><Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></div>
+              <div><Label>{t("login.email")}</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></div>
+              <div><Label>{t("login.password")}</Label><Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></div>
               <Button type="submit" className="w-full font-semibold" disabled={loading}>
-                {loading ? "Signing in…" : "Sign In"}
+                {loading ? t("login.signingIn") : t("login.signIn")}
               </Button>
             </form>
             <p className="text-sm text-center mt-4 text-muted-foreground">
-              Don't have an account? <Link to="/register" className="text-primary font-medium hover:underline">Register</Link>
+              {t("login.noAccount")} <Link to="/register" className="text-primary font-medium hover:underline">{t("login.register")}</Link>
             </p>
           </CardContent>
         </Card>

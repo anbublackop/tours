@@ -10,8 +10,10 @@ import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { api } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 const Enquiry = () => {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
 
@@ -20,14 +22,20 @@ const Enquiry = () => {
     setSubmitting(true);
     try {
       await api.post("/enquiries", form);
-      toast.success("Your enquiry has been submitted successfully! We'll get back to you within 24 hours.");
+      toast.success(t("enquiryPage.successToast"));
       setForm({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to send enquiry. Please try again.");
+      toast.error(err instanceof Error ? err.message : t("enquiryPage.failedDefault"));
     } finally {
       setSubmitting(false);
     }
   };
+
+  const contactItems = [
+    { icon: Phone,  label: t("enquiryPage.callUs"),  value: "+91 98765 43210" },
+    { icon: Mail,   label: t("enquiryPage.emailUs"), value: "info@yatrasathi.com" },
+    { icon: MapPin, label: t("enquiryPage.visitUs"), value: "42, Travel Hub, Connaught Place, New Delhi" },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -35,8 +43,8 @@ const Enquiry = () => {
       <section className="py-16 bg-background flex-1">
         <div className="container max-w-5xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <h1 className="font-display text-4xl font-bold text-foreground mb-3">Get in Touch</h1>
-            <p className="text-muted-foreground max-w-lg mx-auto">Have a question or need a customized package? We'd love to hear from you!</p>
+            <h1 className="font-display text-4xl font-bold text-foreground mb-3">{t("enquiryPage.title")}</h1>
+            <p className="text-muted-foreground max-w-lg mx-auto">{t("enquiryPage.subtitle")}</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -45,26 +53,27 @@ const Enquiry = () => {
                 <CardContent className="p-6">
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid sm:grid-cols-2 gap-4">
-                      <div><Label>Full Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></div>
-                      <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></div>
+                      <div><Label>{t("enquiryPage.fullName")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></div>
+                      <div><Label>{t("enquiryPage.email")}</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></div>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-4">
-                      <div><Label>Phone</Label><Input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required /></div>
-                      <div><Label>Subject</Label><Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} required /></div>
+                      <div><Label>{t("enquiryPage.phone")}</Label><Input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required /></div>
+                      <div><Label>{t("enquiryPage.subject")}</Label><Input value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} required /></div>
                     </div>
-                    <div><Label>Message</Label><Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={5} placeholder="Tell us about your travel plans, special requirements, or questions..." required /></div>
-                    <Button type="submit" size="lg" className="w-full font-semibold" disabled={submitting}>{submitting ? "Sending…" : "Send Enquiry"}</Button>
+                    <div>
+                      <Label>{t("enquiryPage.message")}</Label>
+                      <Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={5} placeholder={t("enquiryPage.messagePlaceholder")} required />
+                    </div>
+                    <Button type="submit" size="lg" className="w-full font-semibold" disabled={submitting}>
+                      {submitting ? t("enquiryPage.sending") : t("enquiryPage.send")}
+                    </Button>
                   </form>
                 </CardContent>
               </Card>
             </div>
 
             <div className="space-y-4">
-              {[
-                { icon: Phone, label: "Call Us", value: "+91 98765 43210" },
-                { icon: Mail, label: "Email Us", value: "info@yatrasathi.com" },
-                { icon: MapPin, label: "Visit Us", value: "42, Travel Hub, Connaught Place, New Delhi" },
-              ].map((item) => (
+              {contactItems.map((item) => (
                 <Card key={item.label}>
                   <CardContent className="p-4 flex items-start gap-3">
                     <item.icon className="w-5 h-5 text-primary mt-0.5" />
@@ -76,7 +85,9 @@ const Enquiry = () => {
                 </Card>
               ))}
               <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
-                <Button variant="outline" className="w-full gap-2"><MessageCircle className="w-4 h-4" /> WhatsApp Us</Button>
+                <Button variant="outline" className="w-full gap-2">
+                  <MessageCircle className="w-4 h-4" /> {t("enquiryPage.whatsapp")}
+                </Button>
               </a>
             </div>
           </div>
