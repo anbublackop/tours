@@ -5,10 +5,20 @@ import { useTranslation } from "react-i18next";
 const Footer = () => {
   const { t } = useTranslation();
 
+  const destinations = [
+    { key: "footer.indiaTours",     to: "/packages/india"       },
+    { key: "footer.nepalTours",     to: "/packages/nepal"       },
+    { key: "footer.koreaTours",     to: "/packages/south-korea" },
+    { key: "footer.thailandTours",  to: "/packages/thailand"    },
+    { key: "footer.chinaTours",     to: "/packages/china"       },
+    { key: "footer.sriLankaTours",  to: "/packages/sri-lanka"   },
+  ];
+
   return (
     <footer className="bg-foreground text-background">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
@@ -23,35 +33,61 @@ const Footer = () => {
                 <span className="text-[10px] opacity-60 font-body tracking-widest uppercase">Travel & Tours</span>
               </div>
             </div>
-            <p className="text-sm opacity-70 mb-4">{t("footer.tagline")}</p>
+            <p className="text-sm opacity-70 mb-5 leading-relaxed">{t("footer.tagline")}</p>
             <div className="flex gap-3">
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm">WA</a>
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm">FB</a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm">IG</a>
-              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm">X</a>
+              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"
+                className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm font-semibold"
+                aria-label="WhatsApp">WA</a>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer"
+                className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm font-semibold"
+                aria-label="Facebook">FB</a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer"
+                className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm font-semibold"
+                aria-label="Instagram">IG</a>
+              <a href="https://twitter.com" target="_blank" rel="noreferrer"
+                className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors text-sm font-semibold"
+                aria-label="X / Twitter">𝕏</a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
             <h3 className="font-display text-lg font-semibold mb-4">{t("footer.quickLinks")}</h3>
-            <ul className="space-y-2 text-sm opacity-70">
-              <li><Link to="/" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.home")}</Link></li>
-              <li><Link to="/packages/india" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.indiaTours")}</Link></li>
-              <li><Link to="/packages/nepal" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.nepalTours")}</Link></li>
-              <li><Link to="/enquiry" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.enquiry")}</Link></li>
-              <li><Link to="/about" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.aboutUs")}</Link></li>
+            <ul className="space-y-2.5 text-sm opacity-70">
+              <li>
+                <Link to="/" className="hover:opacity-100 hover:text-primary transition-colors">
+                  {t("footer.home")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/enquiry" className="hover:opacity-100 hover:text-primary transition-colors">
+                  {t("footer.enquiry")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:opacity-100 hover:text-primary transition-colors">
+                  {t("footer.aboutUs")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard" className="hover:opacity-100 hover:text-primary transition-colors">
+                  {t("nav.dashboard")}
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Popular Tours */}
+          {/* Destinations */}
           <div>
-            <h3 className="font-display text-lg font-semibold mb-4">{t("footer.popularTours")}</h3>
-            <ul className="space-y-2 text-sm opacity-70">
-              <li><Link to="/package/rajasthan-heritage" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.rajasthanHeritage")}</Link></li>
-              <li><Link to="/package/kerala-backwaters" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.keralaBackwaters")}</Link></li>
-              <li><Link to="/package/everest-base-camp" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.everestBaseCamp")}</Link></li>
-              <li><Link to="/package/kathmandu-valley" className="hover:opacity-100 hover:text-primary transition-colors">{t("footer.kathmanduValley")}</Link></li>
+            <h3 className="font-display text-lg font-semibold mb-4">{t("footer.destinations")}</h3>
+            <ul className="space-y-2.5 text-sm opacity-70">
+              {destinations.map(({ key, to }) => (
+                <li key={key}>
+                  <Link to={to} className="hover:opacity-100 hover:text-primary transition-colors">
+                    {t(key)}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -59,16 +95,35 @@ const Footer = () => {
           <div>
             <h3 className="font-display text-lg font-semibold mb-4">{t("footer.contactUs")}</h3>
             <ul className="space-y-3 text-sm opacity-70">
-              <li className="flex items-start gap-2"><Phone className="w-4 h-4 mt-0.5 shrink-0" /> +91 98765 43210</li>
-              <li className="flex items-start gap-2"><Mail className="w-4 h-4 mt-0.5 shrink-0" /> info@yatrasathi.com</li>
-              <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> 42, Travel Hub, Connaught Place, New Delhi - 110001</li>
+              <li>
+                <a href="tel:+919876543210" className="flex items-start gap-2 hover:opacity-100 hover:text-primary transition-colors">
+                  <Phone className="w-4 h-4 mt-0.5 shrink-0" />
+                  +91 98765 43210
+                </a>
+              </li>
+              <li>
+                <a href="mailto:info@yatrasathi.com" className="flex items-start gap-2 hover:opacity-100 hover:text-primary transition-colors">
+                  <Mail className="w-4 h-4 mt-0.5 shrink-0" />
+                  info@yatrasathi.com
+                </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>42, Travel Hub, Connaught Place,<br />New Delhi – 110001, India</span>
+              </li>
             </ul>
           </div>
+
         </div>
       </div>
+
       <div className="border-t border-background/10 py-4">
-        <div className="container text-center text-sm opacity-50">
-          {t("footer.copyright")}
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-2 text-sm opacity-50">
+          <span>{t("footer.copyright")}</span>
+          <div className="flex items-center gap-4">
+            <Link to="/about" className="hover:opacity-80 transition-opacity">{t("footer.aboutUs")}</Link>
+            <Link to="/enquiry" className="hover:opacity-80 transition-opacity">{t("footer.enquiry")}</Link>
+          </div>
         </div>
       </div>
     </footer>
