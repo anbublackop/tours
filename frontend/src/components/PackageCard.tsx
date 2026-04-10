@@ -15,7 +15,7 @@ const PackageCard = ({ pkg }: { pkg: ApiPackage }) => {
   return (
     <Link to={`/package/${pkg.id}`} className="group block h-full">
       {/* Full-bleed cinema poster card */}
-      <div className="relative h-[400px] rounded-2xl overflow-hidden border border-white/8 transition-all duration-500">
+      <div className="relative h-[360px] sm:h-[400px] rounded-2xl overflow-hidden border border-white/8 transition-all duration-500">
 
         {/* Background image */}
         <img

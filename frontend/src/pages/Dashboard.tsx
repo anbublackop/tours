@@ -9,6 +9,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ApiBooking } from "@/types/api";
 import { useTranslation } from "react-i18next";
 
@@ -56,14 +57,36 @@ const Dashboard = () => {
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4 mb-8">
-            <Card><CardContent className="p-4 flex items-center gap-3"><Package className="w-8 h-8 text-primary" /><div><p className="text-2xl font-bold">{bookings.length}</p><p className="text-sm text-muted-foreground">{t("dashboard.totalBookings")}</p></div></CardContent></Card>
-            <Card><CardContent className="p-4 flex items-center gap-3"><Calendar className="w-8 h-8 text-secondary" /><div><p className="text-2xl font-bold">{bookings.filter((b) => b.status === "confirmed").length}</p><p className="text-sm text-muted-foreground">{t("dashboard.confirmed")}</p></div></CardContent></Card>
-            <Card><CardContent className="p-4 flex items-center gap-3"><Users className="w-8 h-8 text-accent" /><div><p className="text-2xl font-bold">{bookings.reduce((s, b) => s + b.num_people, 0)}</p><p className="text-sm text-muted-foreground">{t("dashboard.totalTravellers")}</p></div></CardContent></Card>
+            {loading ? (
+              <>
+                <Card><CardContent className="p-4 flex items-center gap-3"><Skeleton className="w-8 h-8 rounded-lg shrink-0" /><div className="flex-1 space-y-2"><Skeleton className="h-7 w-12" /><Skeleton className="h-4 w-28" /></div></CardContent></Card>
+                <Card><CardContent className="p-4 flex items-center gap-3"><Skeleton className="w-8 h-8 rounded-lg shrink-0" /><div className="flex-1 space-y-2"><Skeleton className="h-7 w-12" /><Skeleton className="h-4 w-24" /></div></CardContent></Card>
+                <Card><CardContent className="p-4 flex items-center gap-3"><Skeleton className="w-8 h-8 rounded-lg shrink-0" /><div className="flex-1 space-y-2"><Skeleton className="h-7 w-12" /><Skeleton className="h-4 w-28" /></div></CardContent></Card>
+              </>
+            ) : (
+              <>
+                <Card><CardContent className="p-4 flex items-center gap-3"><Package className="w-8 h-8 text-primary" /><div><p className="text-2xl font-bold">{bookings.length}</p><p className="text-sm text-muted-foreground">{t("dashboard.totalBookings")}</p></div></CardContent></Card>
+                <Card><CardContent className="p-4 flex items-center gap-3"><Calendar className="w-8 h-8 text-secondary" /><div><p className="text-2xl font-bold">{bookings.filter((b) => b.status === "confirmed").length}</p><p className="text-sm text-muted-foreground">{t("dashboard.confirmed")}</p></div></CardContent></Card>
+                <Card><CardContent className="p-4 flex items-center gap-3"><Users className="w-8 h-8 text-accent" /><div><p className="text-2xl font-bold">{bookings.reduce((s, b) => s + b.num_people, 0)}</p><p className="text-sm text-muted-foreground">{t("dashboard.totalTravellers")}</p></div></CardContent></Card>
+              </>
+            )}
           </div>
 
           <h2 className="font-display text-xl font-semibold mb-4">{t("dashboard.myBookings")}</h2>
           {loading ? (
-            <p className="text-muted-foreground">{t("dashboard.loading")}</p>
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}><CardContent className="p-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-3"><Skeleton className="h-5 w-48" /><Skeleton className="h-5 w-20 rounded-full" /></div>
+                      <div className="flex gap-4"><Skeleton className="h-4 w-10" /><Skeleton className="h-4 w-24" /><Skeleton className="h-4 w-16" /><Skeleton className="h-4 w-20" /></div>
+                    </div>
+                    <div className="flex gap-2"><Skeleton className="h-8 w-24 rounded-md" /><Skeleton className="h-8 w-20 rounded-md" /></div>
+                  </div>
+                </CardContent></Card>
+              ))}
+            </div>
           ) : bookings.length === 0 ? (
             <p className="text-muted-foreground">{t("dashboard.noBookings")} <Link to="/" className="text-primary hover:underline">{t("dashboard.browsePackages")}</Link></p>
           ) : (

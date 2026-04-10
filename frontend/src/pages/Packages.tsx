@@ -8,6 +8,7 @@ import PackageCard from "@/components/PackageCard";
 import EnquiryModal from "@/components/EnquiryModal";
 import { api } from "@/lib/api";
 import { getCategoryUi } from "@/lib/categoryConfig";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ApiCategory, ApiDestination, ApiPackage } from "@/types/api";
 
 const FALLBACK_BANNERS: Record<string, string> = {
@@ -55,7 +56,7 @@ const Packages = () => {
       <Navbar />
 
       {/* Banner */}
-      <section className="relative h-80 flex items-end overflow-hidden">
+      <section className="relative h-64 md:h-80 flex items-end overflow-hidden">
         <img src={bannerImg} alt={countryName} className="absolute inset-0 w-full h-full object-cover" />
         {/* Dark gradient — heaviest at bottom so text is always legible */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/15" />
@@ -76,7 +77,7 @@ const Packages = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-display text-4xl md:text-6xl font-black text-white leading-tight mb-2"
+            className="font-display text-3xl md:text-6xl font-black text-white leading-tight mb-2"
           >
             {countryName} <span className="text-primary">Tours</span>
           </motion.h1>
@@ -93,9 +94,9 @@ const Packages = () => {
       </section>
 
       {/* Category Filter */}
-      <section className="bg-background/95 backdrop-blur-md border-b border-border/60 sticky top-[65px] z-30 shadow-sm">
+      <section className="bg-background/95 backdrop-blur-md border-b border-border/60 sticky top-[57px] md:top-[65px] z-30 shadow-sm">
         <div className="container py-4">
-          <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-0.5">
+          <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-0.5">
 
             {/* All Packages chip */}
             <button
@@ -138,9 +139,15 @@ const Packages = () => {
       <section className="py-12 bg-background flex-1">
         <div className="container">
           {loading ? (
-            <p className="text-center text-muted-foreground py-16">Loading packages…</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="h-[360px] sm:h-[400px] rounded-2xl" />
+                </div>
+              ))}
+            </div>
           ) : packages.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
               {packages.map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />)}
             </div>
           ) : (

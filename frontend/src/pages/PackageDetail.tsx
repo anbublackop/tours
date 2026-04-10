@@ -14,6 +14,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import EnquiryModal from "@/components/EnquiryModal";
 import { api } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ApiPackage, HotelOption, TransportOption } from "@/types/api";
 import { useTranslation } from "react-i18next";
 
@@ -46,8 +47,42 @@ const PackageDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col"><Navbar />
-        <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground text-lg">{t("packageDetail.loading")}</p></div>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        {/* Banner skeleton */}
+        <Skeleton className="h-72 md:h-96 w-full rounded-none" />
+        <section className="py-8 bg-background flex-1">
+          <div className="container">
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Main content skeleton */}
+              <div className="lg:col-span-2 space-y-6">
+                <Skeleton className="h-8 w-2/3 rounded-lg" />
+                <Skeleton className="h-4 w-full rounded" />
+                <Skeleton className="h-4 w-5/6 rounded" />
+                <Skeleton className="h-4 w-4/5 rounded" />
+                <div className="flex gap-2 mt-2">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-px w-full" />
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-14 rounded-lg" />
+                ))}
+              </div>
+              {/* Sidebar skeleton */}
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-1/2 rounded-lg" />
+                <Skeleton className="h-12 w-full rounded-lg" />
+                <Skeleton className="h-12 w-full rounded-lg" />
+                <Skeleton className="h-px w-full" />
+                <Skeleton className="h-5 w-full rounded" />
+                <Skeleton className="h-5 w-full rounded" />
+                <Skeleton className="h-5 w-full rounded" />
+              </div>
+            </div>
+          </div>
+        </section>
         <Footer />
       </div>
     );

@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import BookingDetails from "./pages/BookingDetails";
 import Checkout from "./pages/Checkout";
+import AllPackages from "./pages/AllPackages";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,7 @@ const App = () => (
           <Routes>
             {/* Public */}
             <Route path="/" element={<Index />} />
+            <Route path="/packages" element={<AllPackages />} />
             <Route path="/packages/:country" element={<Packages />} />
             <Route path="/package/:id" element={<PackageDetail />} />
             <Route path="/enquiry" element={<Enquiry />} />
