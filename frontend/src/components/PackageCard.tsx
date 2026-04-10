@@ -3,8 +3,7 @@ import { Star, Clock, MapPin, ArrowRight } from "lucide-react";
 import type { ApiPackage } from "@/types/api";
 import { useTranslation } from "react-i18next";
 
-const FALLBACK =
-  "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=85";
+const FALLBACK = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=85";
 
 const PackageCard = ({ pkg }: { pkg: ApiPackage }) => {
   const { t } = useTranslation();
@@ -15,79 +14,85 @@ const PackageCard = ({ pkg }: { pkg: ApiPackage }) => {
 
   return (
     <Link to={`/package/${pkg.id}`} className="group block h-full">
-      <div className="bg-white dark:bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-border/20 h-full flex flex-col">
+      {/* Full-bleed cinema poster card */}
+      <div className="relative h-[400px] rounded-2xl overflow-hidden border border-white/8 transition-all duration-500">
 
-        {/* ── Image ── */}
-        <div className="relative h-56 overflow-hidden shrink-0">
-          <img
-            src={pkg.image || FALLBACK}
-            alt={pkg.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        {/* Background image */}
+        <img
+          src={pkg.image || FALLBACK}
+          alt={pkg.title}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
 
-          {pkg.category && (
-            <div className="absolute top-3 left-3">
-              <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm text-[11px] font-bold text-foreground rounded-full shadow-md tracking-wide">
-                {pkg.category}
-              </span>
-            </div>
-          )}
+        {/* Gradient overlay — heavier at bottom for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
+
+        {/* Hover tint */}
+        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/8 transition-colors duration-500" />
+
+        {/* ── Top badges ── */}
+        <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
+          {pkg.category ? (
+            <span className="px-2.5 py-1 bg-black/50 backdrop-blur-md text-[11px] font-semibold text-white/90 rounded-full border border-white/15 tracking-wide">
+              {pkg.category}
+            </span>
+          ) : <span />}
 
           {discount && (
-            <div className="absolute top-3 right-3">
-              <span className="px-2.5 py-1 bg-red-500 text-[11px] font-bold text-white rounded-full shadow-md">
-                {discount}% OFF
-              </span>
-            </div>
+            <span className="px-2.5 py-1 bg-accent text-[11px] font-bold text-white rounded-full">
+              {discount}% OFF
+            </span>
           )}
+        </div>
 
-          <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 flex items-center justify-between">
-            <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1.5">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+        {/* ── Bottom content ── */}
+        <div className="absolute bottom-0 left-0 right-0 p-5">
+
+          {/* Rating + duration pills */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-full px-2.5 py-1 border border-white/10">
+              <Star className="w-3 h-3 fill-primary text-primary" />
               <span className="text-white text-xs font-bold">{pkg.rating ?? "4.5"}</span>
               {pkg.reviews_count ? (
-                <span className="text-white/70 text-[11px]">({pkg.reviews_count})</span>
+                <span className="text-white/50 text-[11px]">({pkg.reviews_count})</span>
               ) : null}
             </div>
-            <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1.5">
-              <Clock className="w-3 h-3 text-white/80" />
+            <div className="flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-full px-2.5 py-1 border border-white/10">
+              <Clock className="w-3 h-3 text-white/60" />
               <span className="text-white text-xs font-semibold">{pkg.duration}</span>
             </div>
           </div>
-        </div>
 
-        {/* ── Content ── */}
-        <div className="p-5 flex flex-col flex-1">
+          {/* Title */}
+          <h3 className="font-display text-lg font-bold text-white mb-1.5 line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-300">
+            {pkg.title}
+          </h3>
+
+          {/* Location */}
           {(pkg.state || pkg.location) && (
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-2 font-body">
-              <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+            <div className="flex items-center gap-1.5 text-[11px] text-white/55 mb-4 font-body">
+              <MapPin className="w-3 h-3 text-primary/80 shrink-0" />
               <span className="truncate">{pkg.state || pkg.location}</span>
             </div>
           )}
 
-          <h3 className="font-display text-lg font-bold text-foreground mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-300 leading-snug">
-            {pkg.title}
-          </h3>
-
-          <div className="flex-1" />
-
-          <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/40">
+          {/* Price + CTA row */}
+          <div className="flex items-center justify-between pt-3 border-t border-white/10">
             <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold text-primary font-display">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-black text-primary font-display leading-none">
                   ₹{pkg.price.toLocaleString()}
                 </span>
                 {pkg.original_price && (
-                  <span className="text-xs text-muted-foreground line-through font-body">
+                  <span className="text-xs text-white/40 line-through font-body">
                     ₹{pkg.original_price.toLocaleString()}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-muted-foreground font-body">{t("common.perPerson")}</span>
+              <span className="text-[11px] text-white/45 font-body">{t("common.perPerson")}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-semibold px-3.5 py-2 rounded-xl transition-all duration-300 group-hover:bg-primary group-hover:text-white shadow-sm group-hover:shadow-md">
+            <div className="flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-full group-hover:scale-105 transition-all duration-300">
               {t("common.explore")}
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
             </div>

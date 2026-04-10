@@ -55,14 +55,40 @@ const Packages = () => {
       <Navbar />
 
       {/* Banner */}
-      <section className="relative h-64 flex items-center">
+      <section className="relative h-80 flex items-end overflow-hidden">
         <img src={bannerImg} alt={countryName} className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 hero-overlay" />
-        <div className="relative container z-10">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="font-display text-4xl md:text-5xl font-bold text-primary-foreground">
-            {countryName} Tour Packages
+        {/* Dark gradient — heaviest at bottom so text is always legible */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/15" />
+        {/* Subtle amber brand wash from left */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/15 to-transparent" />
+
+        <div className="relative container z-10 pb-10">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-white/45 text-xs font-body mb-4 tracking-wide">
+            <span>Home</span>
+            <span>/</span>
+            <span>Packages</span>
+            <span>/</span>
+            <span className="text-primary font-medium">{countryName}</span>
+          </div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="font-display text-4xl md:text-6xl font-black text-white leading-tight mb-2"
+          >
+            {countryName} <span className="text-primary">Tours</span>
           </motion.h1>
-          <p className="text-primary-foreground/80 mt-2">Explore our handcrafted tours across {countryName}</p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="text-white/60 text-sm font-body"
+          >
+            Explore our handcrafted tours across {countryName}
+          </motion.p>
         </div>
       </section>
 
