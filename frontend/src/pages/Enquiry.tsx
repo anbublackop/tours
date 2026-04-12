@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,11 +84,6 @@ const Enquiry = () => {
                   </CardContent>
                 </Card>
               ))}
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
-                <Button variant="outline" className="w-full gap-2">
-                  <MessageCircle className="w-4 h-4" /> {t("enquiryPage.whatsapp")}
-                </Button>
-              </a>
             </div>
           </div>
         </div>

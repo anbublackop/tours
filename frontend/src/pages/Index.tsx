@@ -328,7 +328,7 @@ const Index = () => {
                   className="min-w-[210px] w-[210px] md:min-w-[260px] md:w-[260px] relative z-[1] md:hover:z-10 group/cat"
                 >
                   <div className="transition-transform duration-300 ease-out origin-center md:group-hover/cat:scale-[1.25]">
-                    <Link to={`/packages/india?category=${cat.slug}`} className="group block">
+                    <Link to={`/packages?category=${cat.slug}`} className="group block">
                       <div className={`relative h-[160px] md:h-[190px] rounded-2xl overflow-hidden bg-gradient-to-br ${ui.gradient} border border-white/5`}>
                         <div className="absolute -top-6 -right-6 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
                         <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-black/15 rounded-full pointer-events-none" />

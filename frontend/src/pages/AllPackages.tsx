@@ -11,16 +11,7 @@ import { api } from "@/lib/api";
 import { getCategoryUi } from "@/lib/categoryConfig";
 import type { ApiCategory, ApiDestination, ApiPackage } from "@/types/api";
 
-const DEST_FLAGS: Record<string, string> = {
-  "india":       "🇮🇳",
-  "nepal":       "🇳🇵",
-  "south-korea": "🇰🇷",
-  "thailand":    "🇹🇭",
-  "china":       "🇨🇳",
-  "sri-lanka":   "🇱🇰",
-};
-
-// ── Shared button style helpers ───────────────────────────────────────────────
+// ── Button style helpers ──────────────────────────────────────────────────────
 const countryChipCls = (active: boolean) =>
   `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${
     active
@@ -29,10 +20,10 @@ const countryChipCls = (active: boolean) =>
   }`;
 
 const sidebarBtnCls = (active: boolean) =>
-  `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left group ${
+  `w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 text-left ${
     active
-      ? "bg-primary/15 text-primary border-l-[3px] border-primary"
-      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground border-l-[3px] border-transparent"
+      ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+      : "text-muted-foreground font-medium hover:bg-muted/80 hover:text-foreground"
   }`;
 
 const catChipCls = (active: boolean, activeBg: string) =>
@@ -142,11 +133,11 @@ const AllPackages = () => {
           <Globe className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
           <div className="flex gap-2 overflow-x-auto scrollbar-none">
             <button onClick={() => setCountry("")} className={countryChipCls(!activeCountry)}>
-              🌍 All
+              All
             </button>
             {filtersReady ? destinations.map((dest) => (
               <button key={dest.slug} onClick={() => setCountry(dest.slug)} className={countryChipCls(activeCountry === dest.slug)}>
-                {DEST_FLAGS[dest.slug] ?? "🌐"} {dest.name}
+                {dest.name}
               </button>
             )) : Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-7 w-20 rounded-lg shrink-0" />
@@ -162,25 +153,28 @@ const AllPackages = () => {
         <aside className="hidden lg:block w-56 xl:w-64 shrink-0 border-r border-border/50 bg-background">
           <div className="sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto scrollbar-none p-4 flex flex-col gap-1">
             {/* Header */}
-            <div className="flex items-center gap-2 px-1 mb-3 pt-1">
-              <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Destinations</span>
+            <div className="px-1 mb-4 pt-1">
+              <p className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest mb-0.5">Filter by</p>
+              <p className="text-sm font-semibold text-foreground">Destination</p>
             </div>
 
             {/* All countries */}
             <button onClick={() => setCountry("")} className={sidebarBtnCls(!activeCountry)}>
-              <span className="text-base leading-none">🌍</span>
+              <Globe className="w-3.5 h-3.5 shrink-0" />
               <span>All Countries</span>
             </button>
+
+            {/* Divider */}
+            <div className="my-2 border-t border-border/40" />
 
             {/* Country list */}
             {filtersReady ? destinations.map((dest) => (
               <button key={dest.slug} onClick={() => setCountry(dest.slug)} className={sidebarBtnCls(activeCountry === dest.slug)}>
-                <span className="text-base leading-none shrink-0">{DEST_FLAGS[dest.slug] ?? "🌐"}</span>
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeCountry === dest.slug ? "bg-primary-foreground" : "bg-muted-foreground/40"}`} />
                 <span className="truncate">{dest.name}</span>
               </button>
             )) : Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full rounded-xl" />
+              <Skeleton key={i} className="h-9 w-full rounded-lg" />
             ))}
           </div>
         </aside>
@@ -191,7 +185,7 @@ const AllPackages = () => {
           {/* Category filter bar — sticky within main */}
           <div className="sticky top-[57px] lg:top-[65px] z-20 bg-background/95 backdrop-blur-md border-b border-border/60 shadow-sm">
             {/* Search row */}
-            <div className="px-4 md:px-6 pt-2.5 pb-2">
+            <div className="px-4 md:px-6 pt-3 pb-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
                 <input
@@ -212,7 +206,7 @@ const AllPackages = () => {
               </div>
             </div>
             {/* Category chips row */}
-            <div className="px-4 md:px-6 pb-2.5 flex items-center gap-2">
+            <div className="px-4 md:px-6 pb-3 flex items-center gap-2 border-t border-border/40 pt-3">
               <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
               <div className="flex gap-2 overflow-x-auto scrollbar-none">
                 <button onClick={() => setCategory("")} className={catChipCls(!activeCategory, "bg-primary")}>

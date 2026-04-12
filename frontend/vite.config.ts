@@ -13,7 +13,13 @@ export default defineConfig(({ mode }) => ({
     },
     allowedHosts: [
       'unplunged-isolatedly-rolland.ngrok-free.dev',
-    ]
+    ],
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
