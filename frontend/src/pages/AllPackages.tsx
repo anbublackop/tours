@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutGrid, Globe, SlidersHorizontal } from "lucide-react";
+import { LayoutGrid, Globe, SlidersHorizontal, Search, X } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PackageCard from "@/components/PackageCard";
@@ -47,12 +47,15 @@ const AllPackages = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCountry  = searchParams.get("country")  || "";
   const activeCategory = searchParams.get("category") || "";
+  const activeSearch   = searchParams.get("q")        || "";
 
   const [packages,     setPackages]     = useState<ApiPackage[]>([]);
   const [destinations, setDestinations] = useState<ApiDestination[]>([]);
   const [categories,   setCategories]   = useState<ApiCategory[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [filtersReady, setFiltersReady] = useState(false);
+  const [inputValue,   setInputValue]   = useState(activeSearch);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -66,11 +69,12 @@ const AllPackages = () => {
     const params = new URLSearchParams();
     if (activeCountry)  params.set("destination_slug", activeCountry);
     if (activeCategory) params.set("category_slug",    activeCategory);
+    if (activeSearch)   params.set("search",           activeSearch);
     api.get<ApiPackage[]>(`/packages?${params}`)
       .then(setPackages)
       .catch(() => setPackages([]))
       .finally(() => setLoading(false));
-  }, [activeCountry, activeCategory]);
+  }, [activeCountry, activeCategory, activeSearch]);
 
   const setCountry = (slug: string) => {
     const next = new URLSearchParams(searchParams);
@@ -82,6 +86,16 @@ const AllPackages = () => {
     const next = new URLSearchParams(searchParams);
     if (slug) next.set("category", slug); else next.delete("category");
     setSearchParams(next);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setInputValue(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const next = new URLSearchParams(searchParams);
+      if (value) next.set("q", value); else next.delete("q");
+      setSearchParams(next);
+    }, 350);
   };
 
   const activeDestName = destinations.find(d => d.slug === activeCountry)?.name;
@@ -176,7 +190,29 @@ const AllPackages = () => {
 
           {/* Category filter bar — sticky within main */}
           <div className="sticky top-[57px] lg:top-[65px] z-20 bg-background/95 backdrop-blur-md border-b border-border/60 shadow-sm">
-            <div className="px-4 md:px-6 py-2.5 flex items-center gap-2">
+            {/* Search row */}
+            <div className="px-4 md:px-6 pt-2.5 pb-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="Search packages, destinations, categories…"
+                  className="w-full bg-muted/50 border border-border/60 rounded-lg pl-8 pr-8 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:bg-muted/80 transition-all"
+                />
+                {inputValue && (
+                  <button
+                    onClick={() => handleSearchChange("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+            {/* Category chips row */}
+            <div className="px-4 md:px-6 pb-2.5 flex items-center gap-2">
               <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
               <div className="flex gap-2 overflow-x-auto scrollbar-none">
                 <button onClick={() => setCategory("")} className={catChipCls(!activeCategory, "bg-primary")}>

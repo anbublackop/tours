@@ -15,9 +15,10 @@ class User(Base):
     is_admin = Column(Integer, default=0)
 
     # Relationships
-    bookings       = relationship("Booking",      back_populates="user",  lazy="dynamic")
-    reviews        = relationship("Review",       back_populates="user",  lazy="dynamic")
-    refresh_tokens = relationship("RefreshToken", back_populates="user",  lazy="dynamic")
+    bookings              = relationship("Booking",            back_populates="user", lazy="dynamic")
+    reviews               = relationship("Review",             back_populates="user", lazy="dynamic")
+    refresh_tokens        = relationship("RefreshToken",       back_populates="user", lazy="dynamic")
+    password_reset_tokens = relationship("PasswordResetToken", back_populates="user", lazy="dynamic")
 
     def __repr__(self):
         return f"<User(id={self.id}, name={self.name}, email={self.email}, is_admin={self.is_admin})>"

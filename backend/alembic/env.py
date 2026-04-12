@@ -27,6 +27,7 @@ from app.models.package import Package
 from app.models.enquiry import Enquiry
 from app.models.destination import Destination
 from app.models.package_category import PackageCategory
+from app.models.password_reset_token import PasswordResetToken
 
 target_metadata = Base.metadata
 

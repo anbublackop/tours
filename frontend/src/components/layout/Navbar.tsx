@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, ChevronDown, User, LayoutDashboard, LogOut, Globe } from "lucide-react";
+import { Menu, X, ChevronDown, User, LayoutDashboard, LogOut, Globe, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,12 +14,28 @@ import { useTranslation } from "react-i18next";
 import i18n, { LANGUAGES, type LangCode } from "@/i18n";
 
 const Navbar = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen]       = useState(false);
+  const [searchOpen, setSearchOpen]       = useState(false);
+  const [searchQuery, setSearchQuery]     = useState("");
+  const searchInputRef                    = useRef<HTMLInputElement>(null);
   const { isLoggedIn, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleLogout = () => { logout(); navigate("/login"); };
+
+  const openSearch = () => {
+    setSearchOpen(true);
+    setTimeout(() => searchInputRef.current?.focus(), 50);
+  };
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    setSearchOpen(false);
+    setSearchQuery("");
+    navigate(q ? `/packages?q=${encodeURIComponent(q)}` : "/packages");
+  };
   const handleLangChange = (code: LangCode) => {
     i18n.changeLanguage(code);
     localStorage.setItem("yatrasathi_lang", code);
@@ -84,6 +100,30 @@ const Navbar = () => {
 
         {/* Desktop right */}
         <div className="hidden lg:flex items-center gap-3">
+          {/* Search */}
+          {searchOpen ? (
+            <form onSubmit={submitSearch} className="flex items-center gap-1.5">
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search packages…"
+                className="w-48 xl:w-64 bg-muted/60 border border-border rounded-lg px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+              />
+              <button type="submit" className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-primary">
+                <Search className="w-4 h-4" />
+              </button>
+              <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(""); }} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+                <X className="w-4 h-4" />
+              </button>
+            </form>
+          ) : (
+            <button onClick={openSearch} className="p-2 rounded-lg hover:bg-muted border border-border/60 transition-colors text-muted-foreground hover:text-primary" title="Search packages">
+              <Search className="w-4 h-4" />
+            </button>
+          )}
+
           {/* Language */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -165,6 +205,23 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="lg:hidden bg-card/98 backdrop-blur-2xl border-t border-border shadow-2xl shadow-black/40">
           <div className="container flex flex-col gap-1 pt-4 pb-6">
+            {/* Mobile search */}
+            <form
+              onSubmit={(e) => { e.preventDefault(); const q = searchQuery.trim(); setMobileOpen(false); setSearchQuery(""); navigate(q ? `/packages?q=${encodeURIComponent(q)}` : "/packages"); }}
+              className="px-4 pb-1"
+            >
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search packages…"
+                  className="w-full bg-muted/50 border border-border rounded-lg pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+                />
+              </div>
+            </form>
+
             <Link to="/" className="py-3 px-4 font-body text-sm font-medium text-foreground/70 hover:text-primary hover:bg-primary/10 rounded-lg transition-all" onClick={() => setMobileOpen(false)}>
               {t("nav.home")}
             </Link>

@@ -1,5 +1,6 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -16,6 +17,7 @@ router = APIRouter()
 
 @router.get("", response_model=list[PackageListRead])
 def list_packages(
+    search: Optional[str] = Query(None),
     country: Optional[str] = Query(None),
     destination_slug: Optional[str] = Query(None),
     destination_id: Optional[int] = Query(None),
@@ -30,35 +32,49 @@ def list_packages(
     Priority for location filter:  destination_id > destination_slug > country.
     Priority for category filter:  category_id > category_slug > category.
     """
-    q = db.query(Package).filter(Package.is_active == 1)
+    qs = db.query(Package).filter(Package.is_active == 1)
+
+    # ── Full-text search ──────────────────────────────────────────────────────
+    if search:
+        term = f"%{search}%"
+        qs = qs.filter(
+            or_(
+                Package.title.ilike(term),
+                Package.description.ilike(term),
+                Package.location.ilike(term),
+                Package.state.ilike(term),
+                Package.country.ilike(term),
+                Package.category.ilike(term),
+            )
+        )
 
     # ── Destination filter ────────────────────────────────────────────────────
     if destination_id:
-        q = q.filter(Package.destination_id == destination_id)
+        qs = qs.filter(Package.destination_id == destination_id)
     elif destination_slug:
         dest = db.query(Destination).filter(Destination.slug == destination_slug).first()
         if dest:
-            q = q.filter(Package.destination_id == dest.id)
+            qs = qs.filter(Package.destination_id == dest.id)
         else:
-            q = q.filter(Package.country == destination_slug)
+            qs = qs.filter(Package.country == destination_slug)
     elif country:
-        q = q.filter(Package.country == country)
+        qs = qs.filter(Package.country == country)
 
     # ── Category filter ───────────────────────────────────────────────────────
     if category_id:
-        q = q.filter(Package.category_id == category_id)
+        qs = qs.filter(Package.category_id == category_id)
     elif category_slug:
         cat = db.query(PackageCategory).filter(PackageCategory.slug == category_slug).first()
         if cat:
-            q = q.filter(Package.category_id == cat.id)
+            qs = qs.filter(Package.category_id == cat.id)
         else:
-            q = q.filter(Package.category == category_slug)
+            qs = qs.filter(Package.category == category_slug)
     elif category:
-        q = q.filter(Package.category == category)
+        qs = qs.filter(Package.category == category)
 
     if limit:
-        q = q.limit(limit)
-    return q.all()
+        qs = qs.limit(limit)
+    return qs.all()
 
 
 @router.get("/all", response_model=list[PackageListRead])

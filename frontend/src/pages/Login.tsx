@@ -53,7 +53,15 @@ const Login = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div><Label>{t("login.email")}</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></div>
-              <div><Label>{t("login.password")}</Label><Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <Label>{t("login.password")}</Label>
+                  <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
+              </div>
               <Button type="submit" className="w-full font-semibold" disabled={loading}>
                 {loading ? t("login.signingIn") : t("login.signIn")}
               </Button>

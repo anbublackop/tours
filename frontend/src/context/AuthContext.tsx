@@ -46,8 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<AuthState>(loadAuth);
 
   const login = useCallback(async (email: string, password: string) => {
+    const BASE = import.meta.env.VITE_API_URL ?? "/api/v1";
     const body = new URLSearchParams({ username: email, password });
-    const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+    const response = await fetch(`${BASE}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: body.toString(),

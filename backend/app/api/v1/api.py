@@ -1,10 +1,11 @@
 # app/api/v1/api.py
 from fastapi import APIRouter
 
-from app.api.v1 import packages, users, auth, bookings, reviews, enquiries, destinations, categories
+from app.api.v1 import packages, users, auth, bookings, reviews, enquiries, destinations, categories, password_reset
 
 api_router = APIRouter()
-api_router.include_router(auth.router,         prefix="/auth",         tags=["auth"])
+api_router.include_router(auth.router,             prefix="/auth",         tags=["auth"])
+api_router.include_router(password_reset.router,   prefix="/auth",         tags=["auth"])
 api_router.include_router(packages.router,     prefix="/packages",     tags=["packages"])
 api_router.include_router(destinations.router, prefix="/destinations", tags=["destinations"])
 api_router.include_router(categories.router,   prefix="/categories",   tags=["categories"])

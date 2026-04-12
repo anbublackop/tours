@@ -21,7 +21,8 @@ const Register = () => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:8000/api/v1/users/register", {
+      const BASE = import.meta.env.VITE_API_URL ?? "/api/v1";
+      const response = await fetch(`${BASE}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -32,13 +33,21 @@ const Register = () => {
           is_admin: 0,
         }),
       });
-      if (!response.ok) throw new Error("Registration failed");
-      await response.json();
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        const detail = err.detail;
+        const message =
+          typeof detail === "string" ? detail
+          : Array.isArray(detail) ? detail.map((d: { msg?: string }) => d.msg).join(", ")
+          : "Registration failed";
+        toast.error(message);
+        return;
+      }
+      toast.success(t("register.successToast"));
+      navigate("/login");
     } catch (error) {
-      console.error(error);
+      toast.error(error instanceof Error ? error.message : "Registration failed");
     }
-    toast.success(t("register.successToast"));
-    navigate("/login");
   };
 
   return (

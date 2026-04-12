@@ -16,6 +16,16 @@ class Settings(BaseSettings):
     # ALLOWED_ORIGINS=https://yourdomain.com,http://localhost:8080
     allowed_origins: str = "http://localhost:8080,http://localhost:3000"
 
+    # SMTP — used for password reset emails
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = "noreply@yatrasathi.com"
+
+    # Base URL of the frontend (used to build password-reset links)
+    frontend_url: str = "http://localhost:80"
+
     # Default admin credentials — seeded automatically on startup
     admin_email: str = "admin@yatrasathi.com"
     admin_password: str = "Admin@YatraSathi2024"
