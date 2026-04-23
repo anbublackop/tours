@@ -314,37 +314,55 @@ const Index = () => {
           />
           <Carousel scrollRef={catRef}>
             {loading ? Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="min-w-[210px] w-[210px] md:min-w-[260px] md:w-[260px] h-[160px] md:h-[190px] rounded-2xl shrink-0" />
+              <Skeleton key={i} className="min-w-[200px] w-[200px] md:min-w-[240px] md:w-[240px] h-[240px] md:h-[280px] rounded-3xl shrink-0" />
             )) : categories.map((cat, index) => {
               const ui   = getCategoryUi(cat.slug);
               const Icon = ui.icon;
               return (
                 <motion.div
                   key={cat.slug}
-                  initial={{ opacity: 0, x: 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.06 }}
-                  className="min-w-[210px] w-[210px] md:min-w-[260px] md:w-[260px] relative z-[1] md:hover:z-10 group/cat"
+                  transition={{ delay: index * 0.07, type: "spring", stiffness: 120, damping: 18 }}
+                  className="min-w-[200px] w-[200px] md:min-w-[240px] md:w-[240px] relative z-[1] md:hover:z-10 group/cat"
                 >
-                  <div className="transition-transform duration-300 ease-out origin-center md:group-hover/cat:scale-[1.25]">
+                  <div className="transition-all duration-500 ease-out origin-bottom md:group-hover/cat:scale-[1.06] md:group-hover/cat:-translate-y-2">
                     <Link to={`/packages?category=${cat.slug}`} className="group block">
-                      <div className={`relative h-[160px] md:h-[190px] rounded-2xl overflow-hidden bg-gradient-to-br ${ui.gradient} border border-white/5`}>
-                        <div className="absolute -top-6 -right-6 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
-                        <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-black/15 rounded-full pointer-events-none" />
-                        <div className="absolute inset-0 flex flex-col justify-between p-5">
-                          <div className="w-11 h-11 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors duration-300">
-                            <Icon className="w-5 h-5 text-white" strokeWidth={1.5} />
-                          </div>
-                          <div>
-                            <p className="text-white/60 text-[11px] font-body mb-1 line-clamp-2">{cat.description ?? ui.description}</p>
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-display text-base font-bold text-white">{cat.name}</h3>
-                              <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/40 group-hover:translate-x-0.5 transition-all duration-300">
-                                <ArrowRight className="w-3 h-3 text-white" />
-                              </div>
+                      <div className={`relative h-[240px] md:h-[280px] rounded-3xl overflow-hidden bg-gradient-to-b ${ui.gradient} shadow-xl transition-shadow duration-500`}>
+
+                        {/* ── decorative orbs ── */}
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/15 rounded-full blur-2xl pointer-events-none" />
+                        <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-black/20 rounded-full blur-2xl pointer-events-none" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white/5 rounded-full blur-xl pointer-events-none" />
+
+                        {/* ── shimmer line on hover ── */}
+                        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                        {/* ── noise texture overlay ── */}
+                        <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
+
+                        {/* ── content ── */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
+                          {/* Icon */}
+                          <div className="relative">
+                            <div className="relative w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-lg group-hover:bg-white/30 group-hover:scale-110 transition-all duration-400">
+                              <Icon className="w-7 h-7 text-white drop-shadow-md" strokeWidth={1.5} />
                             </div>
                           </div>
+
+                          {/* Text */}
+                          <div className="space-y-1.5">
+                            <h3 className="font-display text-lg font-bold text-white leading-tight drop-shadow-sm">{cat.name}</h3>
+                            <p className="text-white/70 text-[11px] font-body leading-snug line-clamp-2">{cat.description ?? ui.description}</p>
+                          </div>
+                        </div>
+
+                        {/* ── bottom explore pill ── */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/25 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 whitespace-nowrap">
+                          Explore
+                          <ArrowRight className="w-3 h-3" />
                         </div>
                       </div>
                     </Link>
